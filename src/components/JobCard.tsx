@@ -134,7 +134,7 @@ export function JobCard({ job, onChange }: Props) {
         <div className="mt-auto flex items-center gap-2 border-t border-slate-200 pt-3">
           <Link
             to={`/jobs/${job.id}`}
-            className="relative z-10 inline-flex flex-1 cursor-pointer items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-[12px] font-semibold text-slate-800 transition-colors duration-200 hover:border-slate-400 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            className="relative z-10 inline-flex flex-1 cursor-pointer items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-[12px] font-medium text-slate-700 transition-colors duration-200 hover:border-slate-400 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
             View role
           </Link>
@@ -144,8 +144,8 @@ export function JobCard({ job, onChange }: Props) {
             onClick={(e) => void onApply(e)}
             className={`relative z-10 inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-3 py-2 text-[12px] font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-60 ${
               job.applied
-                ? 'border border-emerald-600 bg-emerald-50 text-emerald-800'
-                : 'border border-brand bg-brand text-white hover:bg-brand-hover'
+                ? 'border border-emerald-300 bg-emerald-50 text-emerald-700'
+                : 'border border-brand/40 bg-brand-soft text-brand hover:border-brand hover:bg-white'
             }`}
           >
             {job.applied ? (

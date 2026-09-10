@@ -62,7 +62,7 @@ export function CompanyCard({ company, onChange }: Props) {
         <div className="mt-auto flex items-center gap-2 border-t border-slate-200 pt-3">
           <Link
             to={`/companies/${company.id}`}
-            className="relative z-10 inline-flex flex-1 cursor-pointer items-center justify-center rounded-md border border-brand bg-brand px-3 py-2 text-[12px] font-semibold text-white transition-colors duration-200 hover:bg-brand-hover"
+            className="relative z-10 inline-flex flex-1 cursor-pointer items-center justify-center rounded-md border border-brand/40 bg-brand-soft px-3 py-2 text-[12px] font-semibold text-brand transition-colors duration-200 hover:border-brand hover:bg-white"
           >
             View jobs
           </Link>
