@@ -1,3 +1,14 @@
+export type User = {
+  id: number
+  name: string
+  email: string
+  role: 'candidate' | 'recruiter' | 'admin' | string
+  avatar: string | null
+  confirmed: boolean
+  has_profile: boolean
+  can_apply_directly: boolean
+}
+
 export type Job = {
   id: number
   title: string
@@ -14,6 +25,8 @@ export type Job = {
   created_at: string
   posted_on: string
   company: CompanySummary | null
+  saved?: boolean
+  applied?: boolean
 }
 
 export type CompanySummary = {
@@ -22,6 +35,7 @@ export type CompanySummary = {
   logo_url: string | null
   headquarter: string | null
   company_type: string | null
+  followed?: boolean
 }
 
 export type Company = CompanySummary & {
@@ -31,6 +45,7 @@ export type Company = CompanySummary & {
   max_size: number | null
   active_jobs_count: number | null
   location_short: string | null
+  followed?: boolean
 }
 
 export type Paginated<T> = {
@@ -51,4 +66,14 @@ export type JobFilters = {
   work_mode?: string
   sort_by?: string
   page?: number
+}
+
+export type DashboardData = {
+  role: string
+  user: User
+  stats: Record<string, number>
+  recent_applications?: Array<{ id: number; status?: string; created_at: string; job: Job }>
+  recent_saved_jobs?: Array<{ id: number; created_at: string; job: Job }>
+  followed_companies?: Company[]
+  recent_jobs?: Job[]
 }

@@ -1,41 +1,29 @@
 # ROR India Web
 
-React + Vite + Tailwind frontend for [ROR India](https://github.com/). Talks to the Rails backend JSON API at `/api/v1`.
+Professional React + Vite + Tailwind frontend for ROR India.
 
-## Stack
+## Features
 
-- React 18 + TypeScript
-- Vite 5
-- Tailwind CSS 3
-- React Router 6
+- Jobs & companies browse/search
+- Sign in / Sign up (candidate or recruiter)
+- Dashboard, saved jobs, applications
+- Save jobs, apply, follow companies
+- Session auth via Rails `/api/v1` (Vite proxy)
 
-## Setup
+## Design system
+
+See `design-system/ror-india/MASTER.md` (ui-ux-pro-max).
+
+## Run
 
 ```bash
+# Terminal 1 — Rails
+cd ../ror_india && bin/rails s
+
+# Terminal 2 — React
 cp .env.example .env
 npm install
 npm run dev
 ```
 
-App runs at http://localhost:5173
-
-In development, Vite proxies `/api` → `http://localhost:3000`.
-
-## Rails backend
-
-From the `ror_india` repo:
-
-```bash
-bin/rails s
-```
-
-Ensure CORS is enabled for `http://localhost:5173` (see `config/initializers/cors.rb`).
-
-## Pages migrated so far
-
-- `/` — job search + job cards
-- `/jobs/:id` — job detail
-- `/companies` — company directory
-- `/companies/:id` — company + open roles
-
-Auth, dashboards, blogging, ActiveAdmin, and recruiter flows still live in Rails for now.
+Open http://localhost:5173
