@@ -39,11 +39,11 @@ export function CompanyCard({ company, onChange }: Props) {
             {company.logo_url ? (
               <img src={company.logo_url} alt="" className="h-full w-full object-cover" />
             ) : (
-              <span className="text-base font-bold tracking-tight">{companyInitial(company.name)}</span>
+              <span className="text-sm font-semibold leading-5">{companyInitial(company.name)}</span>
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-base font-bold tracking-tight text-ink">
+            <h3 className="truncate text-sm font-semibold leading-5 text-ink">
               <Link
                 to={`/companies/${company.id}`}
                 className="cursor-pointer after:absolute after:inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
