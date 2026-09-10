@@ -146,4 +146,10 @@ export const api = {
     request<{ success: boolean; followed: boolean }>(`/companies/${companyId}/follow`, {
       method: 'DELETE',
     }),
+
+  subscribe: (email: string) =>
+    request<{ success: boolean; message: string }>('/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify({ subscription: { email } }),
+    }),
 }

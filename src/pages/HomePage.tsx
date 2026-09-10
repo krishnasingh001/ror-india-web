@@ -12,6 +12,11 @@ export function HomePage() {
   const [keywords, setKeywords] = useState('')
   const [location, setLocation] = useState('')
 
+  const [email, setEmail] = useState('')
+  const [subscribeBusy, setSubscribeBusy] = useState(false)
+  const [subscribeMsg, setSubscribeMsg] = useState<string | null>(null)
+  const [subscribeErr, setSubscribeErr] = useState<string | null>(null)
+
   useEffect(() => {
     let cancelled = false
     setLoading(true)
@@ -47,93 +52,143 @@ export function HomePage() {
     }))
   }
 
+  async function onSubscribe(e: FormEvent) {
+    e.preventDefault()
+    setSubscribeBusy(true)
+    setSubscribeMsg(null)
+    setSubscribeErr(null)
+    try {
+      const res = await api.subscribe(email.trim())
+      setSubscribeMsg(res.message || 'Subscribed successfully.')
+      setEmail('')
+    } catch (err: unknown) {
+      const e2 = err as { message?: string }
+      setSubscribeErr(e2.message || 'Could not subscribe.')
+    } finally {
+      setSubscribeBusy(false)
+    }
+  }
+
   return (
     <div>
-      <section className="border-b border-slate-200 bg-[linear-gradient(180deg,#fff_0%,#FEF2F2_40%,#F8FAFC_100%)]">
-        <div className="container-page py-10 sm:py-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">
+      {/* Centered newsletter hero — matches reference */}
+      <section className="border-b border-slate-200 bg-white">
+        <div className="container-page flex flex-col items-center px-4 py-16 text-center sm:py-20 lg:py-24">
+          <span className="inline-flex items-center rounded-full bg-brand-soft px-3.5 py-1 text-xs font-semibold text-brand">
             Ruby on Rails jobs in India
-          </p>
-          <h1 className="mt-2 max-w-2xl text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+          </span>
+
+          <h1 className="mt-6 max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl sm:leading-tight">
             Find your next <span className="text-brand">Rails role</span>
           </h1>
-          <p className="mt-3 max-w-xl text-sm text-ink-muted sm:text-base">
-            Search curated openings, save roles, and apply — built for the Rails community.
+
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+            Discover curated opportunities from companies hiring Ruby on Rails developers across
+            India.
           </p>
 
-          <div className="mt-6 grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
-            {[
-              ['Curated', 'Rails-first listings'],
-              ['Companies', 'Follow hiring teams'],
-              ['Track', 'Saved + applications'],
-            ].map(([t, d]) => (
-              <div key={t} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
-                <p className="text-xs font-semibold text-ink">{t}</p>
-                <p className="mt-0.5 text-[11px] text-ink-muted">{d}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Search sits in normal flow — no negative margin / no clip */}
           <form
-            onSubmit={onSearch}
-            className="mt-8 rounded-xl border border-slate-300 bg-white p-3 shadow-sm sm:p-4"
-            role="search"
-            aria-label="Search jobs"
+            onSubmit={(e) => void onSubscribe(e)}
+            className="mt-8 flex w-full max-w-xl flex-col gap-2 sm:flex-row sm:items-center sm:rounded-full sm:border sm:border-slate-300 sm:bg-white sm:p-1.5 sm:shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
+            aria-labelledby="newsletter-heading"
           >
-            <div className="flex flex-col gap-2 lg:flex-row lg:items-stretch">
-              <div className="min-w-0 flex-1">
-                <label htmlFor="keywords" className="sr-only">
-                  Keywords
-                </label>
-                <input
-                  id="keywords"
-                  className="input-field"
-                  placeholder="Job title, skills, keywords…"
-                  value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
-                />
-              </div>
-              <div className="lg:w-52">
-                <label htmlFor="location" className="sr-only">
-                  Location
-                </label>
-                <input
-                  id="location"
-                  className="input-field"
-                  placeholder="City or remote"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </div>
-              <div className="lg:w-40">
-                <label htmlFor="sort" className="sr-only">
-                  Sort by
-                </label>
-                <select
-                  id="sort"
-                  className="input-field cursor-pointer"
-                  value={filters.sort_by || 'newest'}
-                  onChange={(e) =>
-                    setFilters((p) => ({ ...p, sort_by: e.target.value, page: 1 }))
-                  }
-                >
-                  <option value="newest">Newest</option>
-                  <option value="oldest">Oldest</option>
-                  <option value="salary_high">Salary high</option>
-                  <option value="salary_low">Salary low</option>
-                </select>
-              </div>
-              <button type="submit" className="btn-primary shrink-0 lg:px-6">
-                Search
-              </button>
-            </div>
+            <p id="newsletter-heading" className="sr-only">
+              Get weekly job alerts
+            </p>
+            <label htmlFor="alert-email" className="sr-only">
+              Email for weekly job alerts
+            </label>
+            <input
+              id="alert-email"
+              type="email"
+              required
+              autoComplete="email"
+              inputMode="email"
+              placeholder="Email for weekly job alerts"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-12 w-full rounded-full border border-slate-300 bg-white px-5 text-sm text-slate-900 outline-none transition duration-200 placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/15 sm:h-11 sm:flex-1 sm:border-0 sm:bg-transparent sm:px-4 sm:focus:ring-0"
+            />
+            <button
+              type="submit"
+              disabled={subscribeBusy}
+              className="inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-brand px-6 text-sm font-semibold text-white transition duration-200 hover:bg-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-60 sm:h-11 sm:shrink-0"
+            >
+              {subscribeBusy ? 'Subscribing…' : 'Get alerts'}
+            </button>
           </form>
+
+          <p className="mt-3 text-xs text-slate-500">Curated Rails roles. Unsubscribe anytime.</p>
+
+          {(subscribeMsg || subscribeErr) && (
+            <p
+              className={`mt-3 text-sm ${subscribeErr ? 'text-brand' : 'text-emerald-700'}`}
+              role="status"
+            >
+              {subscribeErr || subscribeMsg}
+            </p>
+          )}
         </div>
       </section>
 
+      {/* Search + listings */}
       <section className="container-page py-8 pb-16">
-        <div className="flex flex-wrap items-center gap-3">
+        <form
+          onSubmit={onSearch}
+          className="rounded-xl border border-slate-300 bg-white p-3 sm:p-4"
+          role="search"
+          aria-label="Search jobs"
+        >
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-stretch">
+            <div className="min-w-0 flex-1">
+              <label htmlFor="keywords" className="sr-only">
+                Keywords
+              </label>
+              <input
+                id="keywords"
+                className="input-field"
+                placeholder="Job title, skills, keywords…"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+              />
+            </div>
+            <div className="lg:w-52">
+              <label htmlFor="location" className="sr-only">
+                Location
+              </label>
+              <input
+                id="location"
+                className="input-field"
+                placeholder="City or remote"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
+            <div className="lg:w-40">
+              <label htmlFor="sort" className="sr-only">
+                Sort by
+              </label>
+              <select
+                id="sort"
+                className="input-field cursor-pointer"
+                value={filters.sort_by || 'newest'}
+                onChange={(e) =>
+                  setFilters((p) => ({ ...p, sort_by: e.target.value, page: 1 }))
+                }
+              >
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="salary_high">Salary high</option>
+                <option value="salary_low">Salary low</option>
+              </select>
+            </div>
+            <button type="submit" className="btn-primary shrink-0 lg:px-6">
+              Search
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm">
             <span className="font-semibold text-ink">{loading ? '…' : total}</span>
             <span className="text-ink-muted">jobs found</span>
