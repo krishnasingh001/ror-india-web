@@ -49,7 +49,7 @@ export function CompanyCard({ company }: Props) {
       <div className="mt-3 flex flex-1 flex-wrap items-end gap-x-4 gap-y-2 text-sm text-ink-muted">
         <span className="inline-flex items-center gap-1.5">
           <BriefcaseIcon />
-          {company.active_jobs_count} {company.active_jobs_count === 1 ? 'job' : 'jobs'}
+          {company.active_jobs_count ?? 0} {(company.active_jobs_count ?? 0) === 1 ? 'job' : 'jobs'}
         </span>
         {(company.min_size || company.max_size) && (
           <span className="inline-flex items-center gap-1.5">

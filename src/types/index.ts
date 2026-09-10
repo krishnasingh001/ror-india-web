@@ -29,7 +29,7 @@ export type Company = CompanySummary & {
   founded_year: number | null
   min_size: number | null
   max_size: number | null
-  active_jobs_count: number
+  active_jobs_count: number | null
   location_short: string | null
 }
 
