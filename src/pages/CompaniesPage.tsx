@@ -43,7 +43,7 @@ export function CompaniesPage() {
 
   return (
     <div>
-      <section className="border-b border-slate-200 bg-[linear-gradient(180deg,#fff_0%,#FEF2F2_40%,#F8FAFC_100%)]">
+      <section className="hero-surface">
         <div className="container-page py-10 sm:py-14">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">
             Companies hiring Rails

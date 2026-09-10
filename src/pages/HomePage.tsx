@@ -72,7 +72,7 @@ export function HomePage() {
   return (
     <div>
       {/* Centered newsletter hero — matches reference */}
-      <section className="border-b border-slate-200 bg-white">
+      <section className="hero-surface">
         <div className="container-page flex flex-col items-center px-4 py-16 text-center sm:py-20 lg:py-24">
           <span className="inline-flex items-center rounded-full bg-brand-soft px-3.5 py-1 text-xs font-semibold text-brand">
             Ruby on Rails jobs in India
@@ -132,7 +132,7 @@ export function HomePage() {
       </section>
 
       {/* Search + listings */}
-      <section className="container-page py-8 pb-16">
+      <section className="container-page relative py-8 pb-16">
         <form
           onSubmit={onSearch}
           className="rounded-xl border border-slate-300 bg-white p-3 sm:p-4"
