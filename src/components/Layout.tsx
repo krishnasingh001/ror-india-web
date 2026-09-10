@@ -20,9 +20,16 @@ export function Layout() {
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
         <div className="container-page flex h-16 items-center justify-between gap-4">
-          <Link to="/" className="flex cursor-pointer items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-sm font-bold text-white">R</span>
-            <span className="text-lg font-bold tracking-tight text-ink">ROR India</span>
+          <Link to="/" className="flex cursor-pointer items-center" aria-label="ROR India home">
+            <span className="inline-flex items-center rounded-lg bg-black px-2.5 py-1.5">
+              <img
+                src="/logo-ror-india.png"
+                alt="ROR India"
+                className="h-7 w-auto sm:h-8"
+                width={148}
+                height={40}
+              />
+            </span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
             <NavLink to="/" end className={navClass}>Jobs</NavLink>
@@ -55,7 +62,12 @@ export function Layout() {
       <main className="flex-1"><Outlet /></main>
       <footer className="border-t border-slate-200 bg-white">
         <div className="container-page flex flex-col gap-2 py-8 text-sm text-ink-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} ROR India — Rails jobs across India.</p>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center rounded-md bg-black px-2 py-1">
+              <img src="/logo-ror-india.png" alt="" className="h-5 w-auto" />
+            </span>
+            <p>© {new Date().getFullYear()} Rails jobs across India.</p>
+          </div>
           <div className="flex gap-4">
             <Link to="/sign-in" className="hover:text-brand">Sign in</Link>
             <Link to="/sign-up" className="hover:text-brand">Sign up</Link>
