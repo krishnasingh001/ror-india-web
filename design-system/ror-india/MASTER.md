@@ -1,8 +1,8 @@
-# Design System Master File — ROR India Web
+# Design System Master File — ROR World Web
 
 > Brand-adapted from ui-ux-pro-max. Ruby accent for ROR identity; Plus Jakarta Sans; marketplace/job-board pattern.
 
-**Project:** ROR India  
+**Project:** ROR World  
 **Stack:** React + Vite + Tailwind
 
 ## Colors

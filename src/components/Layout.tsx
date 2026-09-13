@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { AtmosphereBackground } from '@/components/AtmosphereBackground'
+import { BrandLogo } from '@/components/BrandLogo'
 import { SiteFooter } from '@/components/SiteFooter'
 import { UserMenu } from '@/components/UserMenu'
 import { useAuth } from '@/context/AuthContext'
@@ -19,15 +20,9 @@ export function Layout() {
     <div className="atmosphere app-shell">
       <AtmosphereBackground />
       <header className="site-header">
-        <div className="container-page flex h-16 items-center justify-between gap-4">
-          <Link to="/" className="flex cursor-pointer items-center" aria-label="ROR India home">
-            <img
-              src="/logo-ror-india.png"
-              alt="ROR India"
-              className="h-8 w-auto sm:h-9"
-              width={160}
-              height={44}
-            />
+        <div className="container-page flex h-[4.5rem] items-center justify-between gap-4 sm:h-20">
+          <Link to="/" className="flex shrink-0 cursor-pointer items-center" aria-label="ROR World home">
+            <BrandLogo />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">

@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { BrandLogo } from '@/components/BrandLogo'
 import { api } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 
@@ -100,24 +101,24 @@ export function SiteFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-4">
-            <Link to="/" className="inline-flex" aria-label="ROR India home">
-              <img src="/logo-ror-india.png" alt="ROR India" className="h-9 w-auto" />
+            <Link to="/" className="inline-flex" aria-label="ROR World home">
+              <BrandLogo />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-600">
-              Connecting Ruby on Rails developers with top companies across India. Find your dream
-              job or hire the perfect developer for your team.
+              Connecting Ruby on Rails developers with top companies worldwide. Find your dream job
+              or hire the perfect developer for your team.
             </p>
             <div className="mt-5 flex items-center gap-2">
-              <SocialLink href="https://twitter.com/rorindia" label="ROR India on Twitter">
+              <SocialLink href="https://twitter.com/rorindia" label="ROR World on Twitter">
                 <TwitterIcon />
               </SocialLink>
               <SocialLink
                 href="https://www.linkedin.com/company/rorindia"
-                label="ROR India on LinkedIn"
+                label="ROR World on LinkedIn"
               >
                 <LinkedInIcon />
               </SocialLink>
-              <SocialLink href="https://github.com/rorindia" label="ROR India on GitHub">
+              <SocialLink href="https://github.com/rorindia" label="ROR World on GitHub">
                 <GitHubIcon />
               </SocialLink>
             </div>
@@ -209,7 +210,7 @@ export function SiteFooter() {
       <div className="border-t border-slate-200/80 bg-slate-50/60">
         <div className="container-page flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-600">
-            © {year} ROR India. All rights reserved.
+            © {year} ROR World. All rights reserved.
           </p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">

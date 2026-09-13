@@ -299,7 +299,7 @@ export function DashboardPage() {
               </ul>
             ) : (
               <div className="dash-panel-empty">
-                <p>Track every role you’ve applied to — LinkedIn, Naukri, ROR India, and more.</p>
+                <p>Track every role you’ve applied to — LinkedIn, Naukri, ROR World, and more.</p>
                 <Link to="/track-applications" className="dash-panel-link mt-3 inline-block">
                   Open board
                 </Link>

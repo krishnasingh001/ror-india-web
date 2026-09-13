@@ -93,7 +93,7 @@ export function HomePage() {
       <section className="hero-surface">
         <div className="container-page flex flex-col items-center px-4 pb-5 pt-6 text-center sm:pb-6 sm:pt-8">
           <span className="inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-[11px] font-semibold text-brand">
-            Ruby on Rails jobs in India
+            Ruby on Rails jobs worldwide
           </span>
 
           <h1 className="mt-3 max-w-2xl text-[1.75rem] font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight">
@@ -101,7 +101,7 @@ export function HomePage() {
           </h1>
 
           <p className="mt-2 max-w-xl text-sm text-ink-muted sm:text-[15px]">
-            Curated Ruby on Rails jobs from companies hiring across India.
+            Curated Ruby on Rails jobs from companies hiring around the world.
           </p>
 
           <form

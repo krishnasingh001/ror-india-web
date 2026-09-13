@@ -32,7 +32,7 @@ export function SignInPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand">Welcome back</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink">Sign in to ROR India</h1>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink">Sign in to ROR World</h1>
           <p className="mt-2 text-sm text-ink-muted">Access saved jobs, applications, and your dashboard.</p>
         </div>
         <form onSubmit={onSubmit} className="card-surface space-y-4 p-6 shadow-panel sm:p-8">

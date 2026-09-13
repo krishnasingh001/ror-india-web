@@ -143,7 +143,7 @@ export function BlogEditorPage() {
               required
               minLength={3}
               maxLength={200}
-              placeholder="e.g. How we hire Rails engineers in India"
+              placeholder="e.g. How we hire Rails engineers worldwide"
             />
           </Field>
 

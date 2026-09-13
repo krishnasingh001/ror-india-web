@@ -65,7 +65,7 @@ export function BlogPage() {
           <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                Rails insights for India
+                Rails insights for the world
               </h1>
               <p className="mt-3 max-w-xl text-sm text-ink-muted sm:text-base">
                 Tips, hiring notes, and community posts from Ruby on Rails developers.
