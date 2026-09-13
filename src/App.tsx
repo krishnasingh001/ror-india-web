@@ -2,21 +2,30 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { Layout } from '@/components/Layout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { AboutPage } from '@/pages/AboutPage'
 import { BlogEditorPage } from '@/pages/BlogEditorPage'
 import { BlogPage } from '@/pages/BlogPage'
 import { BlogShowPage } from '@/pages/BlogShowPage'
+import { CareersPage } from '@/pages/CareersPage'
 import { CompaniesPage } from '@/pages/CompaniesPage'
 import { CompanyShowPage } from '@/pages/CompanyShowPage'
+import { ContactPage } from '@/pages/ContactPage'
+import { CookiePolicyPage } from '@/pages/CookiePolicyPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { ExternalApplicationsPage } from '@/pages/ExternalApplicationsPage'
+import { GdprCompliancePage } from '@/pages/GdprCompliancePage'
 import { HomePage } from '@/pages/HomePage'
 import { JobShowPage } from '@/pages/JobShowPage'
 import { MyBlogPostsPage } from '@/pages/MyBlogPostsPage'
+import { PrivacyPolicyPage } from '@/pages/PrivacyPolicyPage'
 import { ProfileEditPage } from '@/pages/ProfileEditPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { SavedJobsPage } from '@/pages/SavedJobsPage'
+import { ShopPage } from '@/pages/ShopPage'
 import { SignInPage } from '@/pages/SignInPage'
 import { SignUpPage } from '@/pages/SignUpPage'
+import { SitemapPage } from '@/pages/SitemapPage'
+import { TermsOfServicePage } from '@/pages/TermsOfServicePage'
 
 export default function App() {
   return (
@@ -98,6 +107,15 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="careers" element={<CareersPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="shop" element={<ShopPage />} />
+            <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="cookie-policy" element={<CookiePolicyPage />} />
+            <Route path="gdpr-compliance" element={<GdprCompliancePage />} />
+            <Route path="sitemap" element={<SitemapPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

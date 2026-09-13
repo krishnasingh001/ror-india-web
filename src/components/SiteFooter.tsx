@@ -4,12 +4,6 @@ import { BrandLogo } from '@/components/BrandLogo'
 import { api } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 
-const RAILS_ORIGIN = import.meta.env.VITE_RAILS_URL?.replace(/\/$/, '') || 'http://localhost:3000'
-
-function railsPath(path: string) {
-  return `${RAILS_ORIGIN}${path}`
-}
-
 function formatStat(n: number) {
   if (n >= 1000) return `${Math.floor(n / 100) / 10}k+`
   return `${n}+`
@@ -81,18 +75,18 @@ export function SiteFooter() {
   ]
 
   const companyLinks = [
-    { label: 'About Us', href: railsPath('/about') },
-    { label: 'Careers', href: railsPath('/careers') },
-    { label: 'Contact', href: railsPath('/contact') },
-    { label: 'Shop', href: railsPath('/shop') },
+    { label: 'About Us', to: '/about' },
+    { label: 'Careers', to: '/careers' },
+    { label: 'Contact', to: '/contact' },
+    { label: 'Shop', to: '/shop' },
   ]
 
   const legalLinks = [
-    { label: 'Privacy Policy', href: railsPath('/privacy-policy') },
-    { label: 'Terms of Service', href: railsPath('/terms-of-service') },
-    { label: 'Cookie Policy', href: railsPath('/cookie-policy') },
-    { label: 'GDPR Compliance', href: railsPath('/gdpr-compliance') },
-    { label: 'Sitemap', href: railsPath('/sitemap.xml') },
+    { label: 'Privacy Policy', to: '/privacy-policy' },
+    { label: 'Terms of Service', to: '/terms-of-service' },
+    { label: 'Cookie Policy', to: '/cookie-policy' },
+    { label: 'GDPR Compliance', to: '/gdpr-compliance' },
+    { label: 'Sitemap', to: '/sitemap' },
   ]
 
   return (
@@ -147,12 +141,12 @@ export function SiteFooter() {
             <ul className="mt-4 list-none space-y-2.5 p-0">
               {companyLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-slate-600 transition hover:text-brand"
+                  <Link
+                    to={link.to}
+                    className="cursor-pointer text-sm text-slate-600 transition duration-200 hover:text-brand"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -164,12 +158,12 @@ export function SiteFooter() {
             <ul className="mt-4 list-none space-y-2.5 p-0">
               {legalLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-slate-600 transition hover:text-brand"
+                  <Link
+                    to={link.to}
+                    className="cursor-pointer text-sm text-slate-600 transition duration-200 hover:text-brand"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
