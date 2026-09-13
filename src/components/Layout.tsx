@@ -20,7 +20,7 @@ export function Layout() {
     <div className="atmosphere app-shell">
       <AtmosphereBackground />
       <header className="site-header">
-        <div className="container-page flex h-[4.5rem] items-center justify-between gap-4 sm:h-20">
+        <div className="container-page flex h-[4.25rem] items-center justify-between gap-4 sm:h-[4.5rem]">
           <Link to="/" className="flex shrink-0 cursor-pointer items-center" aria-label="ROR World home">
             <BrandLogo />
           </Link>
