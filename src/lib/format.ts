@@ -23,3 +23,10 @@ export function companyAvatarTone(name: string) {
   }
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
+
+export function companySizeLabel(minSize?: number | null, maxSize?: number | null) {
+  if (minSize != null && maxSize != null) return `${minSize}–${maxSize} employees`
+  if (minSize != null) return `${minSize}+ employees`
+  if (maxSize != null) return `Up to ${maxSize} employees`
+  return null
+}

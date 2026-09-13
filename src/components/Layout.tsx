@@ -1,4 +1,7 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
+import { AtmosphereBackground } from '@/components/AtmosphereBackground'
+import { SiteFooter } from '@/components/SiteFooter'
+import { UserMenu } from '@/components/UserMenu'
 import { useAuth } from '@/context/AuthContext'
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -10,16 +13,11 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
   ].join(' ')
 
 export function Layout() {
-  const { user, loading, logout } = useAuth()
-  const navigate = useNavigate()
-
-  async function onLogout() {
-    await logout()
-    navigate('/')
-  }
+  const { user, loading } = useAuth()
 
   return (
-    <div className="app-shell">
+    <div className="atmosphere app-shell">
+      <AtmosphereBackground />
       <header className="site-header">
         <div className="container-page flex h-16 items-center justify-between gap-4">
           <Link to="/" className="flex cursor-pointer items-center" aria-label="ROR India home">
@@ -39,33 +37,21 @@ export function Layout() {
             <NavLink to="/companies" className={navClass}>
               Companies
             </NavLink>
+            <NavLink to="/blog" className={navClass}>
+              Blog
+            </NavLink>
             {user && (
-              <>
-                <NavLink to="/dashboard" className={navClass}>
-                  Dashboard
-                </NavLink>
-                <NavLink to="/saved-jobs" className={navClass}>
-                  Saved
-                </NavLink>
-                <NavLink to="/applications" className={navClass}>
-                  Applications
-                </NavLink>
-              </>
+              <NavLink to="/dashboard" className={navClass}>
+                Dashboard
+              </NavLink>
             )}
           </nav>
 
           <div className="flex items-center gap-2">
             {loading ? (
-              <div className="h-9 w-24 animate-pulse rounded-xl bg-slate-200/70" />
+              <div className="h-9 w-24 animate-pulse rounded-full bg-slate-200/70" />
             ) : user ? (
-              <>
-                <span className="hidden max-w-[10rem] truncate text-sm font-medium text-slate-600 lg:inline">
-                  {user.name}
-                </span>
-                <button type="button" onClick={() => void onLogout()} className="btn-secondary !py-2">
-                  Sign out
-                </button>
-              </>
+              <UserMenu />
             ) : (
               <>
                 <Link to="/sign-in" className="btn-secondary !py-2">
@@ -84,22 +70,7 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="site-footer">
-        <div className="container-page flex flex-col gap-3 py-8 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logo-ror-india.png" alt="" className="h-6 w-auto" />
-            <p>© {new Date().getFullYear()} Rails jobs across India.</p>
-          </div>
-          <div className="flex gap-4">
-            <Link to="/sign-in" className="hover:text-brand">
-              Sign in
-            </Link>
-            <Link to="/sign-up" className="hover:text-brand">
-              Sign up
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

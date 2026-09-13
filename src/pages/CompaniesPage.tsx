@@ -1,25 +1,33 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { CompanyCard } from '@/components/CompanyCard'
+import { Pagination } from '@/components/Pagination'
 import { api } from '@/lib/api'
 import type { Company } from '@/types'
 
 export function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([])
   const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [perPage, setPerPage] = useState(12)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [query, setQuery] = useState('')
+  const listRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     let cancelled = false
     setLoading(true)
+    setError(null)
     api
-      .fetchCompanies({ search: query || undefined, page: 1 })
+      .fetchCompanies({ search: query || undefined, page })
       .then((res) => {
         if (!cancelled) {
           setCompanies(res.data)
           setTotal(res.meta.total_count)
+          setTotalPages(res.meta.total_pages)
+          setPerPage(res.meta.per_page)
         }
       })
       .catch((err: Error) => {
@@ -34,11 +42,17 @@ export function CompaniesPage() {
     return () => {
       cancelled = true
     }
-  }, [query])
+  }, [query, page])
 
   function onSearch(e: FormEvent) {
     e.preventDefault()
+    setPage(1)
     setQuery(search.trim())
+  }
+
+  function goToPage(next: number) {
+    setPage(next)
+    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
@@ -78,12 +92,19 @@ export function CompaniesPage() {
         </div>
       </section>
 
-      <section className="container-page py-8 pb-16">
-        <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm">
-          <span className="font-semibold text-ink">{loading ? '…' : total}</span>
-          <span className="text-ink-muted">
-            {total === 1 ? 'company' : 'companies'} found
-          </span>
+      <section ref={listRef} className="container-page scroll-mt-24 py-8 pb-16">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm">
+            <span className="font-semibold text-ink">{loading ? '…' : total}</span>
+            <span className="text-ink-muted">
+              {total === 1 ? 'company' : 'companies'} found
+            </span>
+          </div>
+          {!loading && totalPages > 1 && (
+            <span className="text-sm text-slate-500">
+              Page {page} of {totalPages}
+            </span>
+          )}
         </div>
 
         {error && (
@@ -98,19 +119,35 @@ export function CompaniesPage() {
               <div key={i} className="h-40 animate-pulse rounded-xl border border-slate-300 bg-white" />
             ))}
           </div>
+        ) : companies.length === 0 && !error ? (
+          <div className="mt-10 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
+            <h2 className="text-base font-semibold text-ink">No companies found</h2>
+            <p className="mt-2 text-sm text-ink-muted">Try a different search.</p>
+          </div>
         ) : (
-          <ul className="mt-6 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {companies.map((c) => (
-              <li key={c.id}>
-                <CompanyCard
-                  company={c}
-                  onChange={(next) =>
-                    setCompanies((prev) => prev.map((x) => (x.id === next.id ? next : x)))
-                  }
-                />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-6 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {companies.map((c) => (
+                <li key={c.id}>
+                  <CompanyCard
+                    company={c}
+                    onChange={(next) =>
+                      setCompanies((prev) => prev.map((x) => (x.id === next.id ? next : x)))
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalCount={total}
+              perPage={perPage}
+              onChange={goToPage}
+              label="companies"
+            />
+          </>
         )}
       </section>
     </div>

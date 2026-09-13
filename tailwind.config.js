@@ -17,7 +17,7 @@ export default {
         },
         surface: {
           DEFAULT: '#FFFFFF',
-          page: '#F8FAFC',
+          page: '#FFFFFF',
           muted: '#F1F5F9',
         },
       },

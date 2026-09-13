@@ -31,11 +31,23 @@ export function JobCard({ job, onChange }: Props) {
   async function onApply(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
+    if (!user) return navigate('/sign-in', { state: { from: `/jobs/${job.id}` } })
+
     if (external && job.job_url) {
-      window.open(job.job_url, '_blank', 'noopener,noreferrer')
+      setBusy(true)
+      try {
+        await api.trackExternalJob(job.id)
+        onChange?.({ ...job, applied: true })
+        window.open(job.job_url, '_blank', 'noopener,noreferrer')
+      } catch (err: unknown) {
+        const e2 = err as { message?: string }
+        alert(e2.message || 'Could not track this application.')
+      } finally {
+        setBusy(false)
+      }
       return
     }
-    if (!user) return navigate('/sign-in', { state: { from: `/jobs/${job.id}` } })
+
     setBusy(true)
     try {
       const res = await api.applyToJob(job.id)
