@@ -236,19 +236,6 @@ export function SiteFooter() {
                 </span>
               </p>
             )}
-            <a
-              href="https://www.makeinindia.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Make in India"
-              className="inline-flex shrink-0"
-            >
-              <img
-                src="/make-in-india.png"
-                alt="Make in India"
-                className="h-8 w-auto object-contain sm:h-9"
-              />
-            </a>
           </div>
         </div>
       </div>
