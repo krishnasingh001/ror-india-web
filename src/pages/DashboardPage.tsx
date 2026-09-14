@@ -1,10 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { JobCard } from '@/components/JobCard'
 import { api } from '@/lib/api'
 import { companyAvatarTone, companyInitial } from '@/lib/format'
 import { useAuth } from '@/context/AuthContext'
-import type { DashboardData } from '@/types'
+import type { DashboardData, RecruiterApplication } from '@/types'
 
 function IconSearch({ className = 'h-4 w-4' }: { className?: string }) {
   return (
@@ -416,40 +415,137 @@ export function DashboardPage() {
 }
 
 function RecruiterDashboard({ data }: { data: DashboardData }) {
+  const greeting = data.greeting || 'Hello'
+  const firstName = (data.user.name || 'there').split(' ')[0]
+  const recentApps = (data.recent_applications || []) as RecruiterApplication[]
+
+  const stats = [
+    { label: 'Posted jobs', value: data.stats.posted_jobs ?? 0, to: '/my-jobs' },
+    { label: 'Applications', value: data.stats.applications ?? 0, to: '/recruiter/applications' },
+    { label: 'Pending', value: data.stats.pending_applications ?? 0, to: '/recruiter/applications?status=applied' },
+    { label: 'Open talent', value: data.stats.open_profiles ?? 0, to: '/talent' },
+  ]
+
   return (
     <div className="container-page py-8 sm:py-12">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand">Recruiter</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink">Hiring dashboard</h1>
+          <p className="text-sm text-slate-500">
+            {greeting}, {firstName}
+          </p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight text-ink">Hiring dashboard</h1>
+          <p className="mt-1 text-sm text-ink-muted">Post roles, review applicants, and browse Rails talent.</p>
         </div>
-        <Link to="/" className="btn-primary">
-          Browse talent jobs
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/jobs/new" className="btn-primary cursor-pointer">
+            Post a job
+          </Link>
+          <Link to="/recruiter/profile" className="btn-secondary cursor-pointer">
+            My profile
+          </Link>
+          <Link to="/talent" className="btn-secondary cursor-pointer">
+            Browse talent
+          </Link>
+        </div>
       </header>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <div className="card-surface p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Posted jobs</p>
-          <p className="mt-2 text-3xl font-bold text-ink">{data.stats.posted_jobs ?? 0}</p>
-        </div>
-        <div className="card-surface p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Applications</p>
-          <p className="mt-2 text-3xl font-bold text-ink">{data.stats.applications ?? 0}</p>
-        </div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <Link
+            key={stat.label}
+            to={stat.to}
+            className="card-surface cursor-pointer p-5 transition duration-200 hover:border-brand/30 hover:shadow-card-hover"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{stat.label}</p>
+            <p className="mt-2 text-3xl font-bold text-ink">{stat.value}</p>
+          </Link>
+        ))}
       </div>
 
-      <section className="mt-8">
-        <h2 className="text-lg font-bold text-ink">Your recent postings</h2>
-        <ul className="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
-          {(data.recent_jobs || []).map((job) => (
-            <li key={job.id}>
-              <JobCard job={job} />
-            </li>
-          ))}
-        </ul>
-        {!data.recent_jobs?.length && <p className="mt-4 text-sm text-ink-muted">No jobs posted yet.</p>}
-      </section>
+      <nav className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5" aria-label="Recruiter quick links">
+        {[
+          { to: '/recruiter/profile', label: 'My profile' },
+          { to: '/my-jobs', label: 'My jobs' },
+          { to: '/recruiter/applications', label: 'Applications inbox' },
+          { to: '/talent', label: 'Browse talent' },
+          { to: '/saved-profiles', label: 'Saved profiles' },
+        ].map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            className="card-surface flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-ink transition hover:border-brand/30"
+          >
+            {item.label}
+            <span className="text-brand">→</span>
+          </Link>
+        ))}
+      </nav>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-ink">Recent applications</h2>
+            <Link to="/recruiter/applications" className="text-sm font-semibold text-brand hover:text-brand-hover">
+              View all
+            </Link>
+          </div>
+          {recentApps.length > 0 ? (
+            <ul className="mt-4 list-none space-y-3 p-0">
+              {recentApps.map((app) => (
+                <li key={app.id} className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-ink">{app.candidate?.name || 'Candidate'}</p>
+                    <p className="truncate text-sm text-ink-muted">
+                      {app.job?.title}
+                      {app.applied_ago ? ` · ${app.applied_ago}` : ''}
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase text-slate-600">
+                    {app.status_display || app.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-4 text-sm text-ink-muted">No applications yet. Post a job to start receiving candidates.</p>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-ink">Your recent postings</h2>
+            <Link to="/my-jobs" className="text-sm font-semibold text-brand hover:text-brand-hover">
+              Manage
+            </Link>
+          </div>
+          {(data.recent_jobs || []).length > 0 ? (
+            <ul className="mt-4 list-none space-y-3 p-0">
+              {(data.recent_jobs || []).map((job) => (
+                <li key={job.id} className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                  <div className="min-w-0">
+                    <Link to={`/jobs/${job.id}`} className="truncate font-semibold text-ink hover:text-brand">
+                      {job.title}
+                    </Link>
+                    <p className="text-sm text-ink-muted">
+                      {job.applications_count ?? 0} applications · {job.posted_on}
+                    </p>
+                  </div>
+                  <Link to={`/jobs/${job.id}/edit`} className="shrink-0 text-sm font-semibold text-brand hover:text-brand-hover">
+                    Edit
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="mt-4">
+              <p className="text-sm text-ink-muted">No jobs posted yet.</p>
+              <Link to="/jobs/new" className="btn-primary mt-3 inline-flex cursor-pointer !py-2">
+                Post your first job
+              </Link>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   )
 }

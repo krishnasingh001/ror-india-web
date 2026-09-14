@@ -12,7 +12,13 @@ import type {
   ExternalBoardResponse,
   Job,
   JobFilters,
+  JobFormInput,
+  JobTypeOption,
   Paginated,
+  RecruiterApplication,
+  RecruiterProfile,
+  JobApplicationComment,
+  TalentProfile,
   User,
 } from '@/types'
 
@@ -34,7 +40,18 @@ export async function ensureCsrf() {
     return csrfToken
   }
   const res = await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' })
-  const data = (await res.json()) as { csrf_token: string }
+  const text = await res.text()
+  let data: { csrf_token?: string }
+  try {
+    data = JSON.parse(text) as { csrf_token?: string }
+  } catch {
+    throw new Error(
+      `Could not load CSRF token (${res.status}). Rails may be down or have pending migrations.`,
+    )
+  }
+  if (!data.csrf_token) {
+    throw new Error('CSRF token missing from API response.')
+  }
   csrfToken = data.csrf_token
   return csrfToken
 }
@@ -62,10 +79,26 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   })
 
   const text = await res.text()
-  const data = text ? JSON.parse(text) : {}
+  let data: Record<string, unknown> = {}
+  if (text) {
+    try {
+      data = JSON.parse(text) as Record<string, unknown>
+    } catch {
+      const looksLikeHtml = /^\s*</.test(text)
+      throw new Error(
+        looksLikeHtml
+          ? `API returned HTML instead of JSON (${res.status}). Is Rails running and migrations up to date?`
+          : `Invalid JSON response (${res.status})`,
+      )
+    }
+  }
 
   if (!res.ok) {
-    const err = new Error(data.message || data.error || `Request failed (${res.status})`) as Error & {
+    const err = new Error(
+      (typeof data.message === 'string' && data.message) ||
+        (typeof data.error === 'string' && data.error) ||
+        `Request failed (${res.status})`,
+    ) as Error & {
       status?: number
       payload?: unknown
     }
@@ -103,9 +136,145 @@ export const api = {
   fetchJob: (id: string | number) =>
     request<{ data: Job; similar_jobs: Job[] }>(`/jobs/${id}`),
 
-  fetchCompanies: (params: { search?: string; page?: number } = {}) =>
-    request<Paginated<Company>>(`/companies${toQuery({ search: params.search, page: params.page })}`),
+  fetchMyJobs: (page = 1, perPage = 10) =>
+    request<Paginated<Job>>(`/jobs/mine${toQuery({ page, per_page: perPage })}`),
 
+  createJob: (payload: JobFormInput) =>
+    request<{ success: boolean; message: string; data: Job; errors?: string[] }>('/jobs', {
+      method: 'POST',
+      body: JSON.stringify({ job: payload }),
+    }),
+
+  updateJob: (id: number | string, payload: JobFormInput) =>
+    request<{ success: boolean; message: string; data: Job; errors?: string[] }>(`/jobs/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ job: payload }),
+    }),
+
+  deleteJob: (id: number | string) =>
+    request<{ success: boolean; message: string }>(`/jobs/${id}`, { method: 'DELETE' }),
+
+  fetchJobTypes: () => request<{ data: JobTypeOption[] }>('/job_types'),
+
+  fetchRecruiterApplications: (params: { status?: string; job_id?: number | string; page?: number } = {}) =>
+    request<Paginated<RecruiterApplication>>(
+      `/recruiter/applications${toQuery({
+        status: params.status,
+        job_id: params.job_id,
+        page: params.page,
+      })}`,
+    ),
+
+  fetchRecruiterApplicationsBoard: (params: { job_id?: number | string } = {}) =>
+    request<{
+      data: Record<string, RecruiterApplication[]>
+      meta: { total_count: number; statuses: string[] }
+    }>(`/recruiter/applications/board${toQuery({ job_id: params.job_id })}`),
+
+  fetchRecruiterApplication: (id: number | string) =>
+    request<{ data: RecruiterApplication }>(`/recruiter/applications/${id}`),
+
+  updateApplicationStatus: (id: number | string, status: string) =>
+    request<{ success: boolean; message: string; data: RecruiterApplication }>(
+      `/recruiter/applications/${id}/update_status`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      },
+    ),
+
+  fetchRecruiterApplicationComments: (applicationId: number | string) =>
+    request<{
+      data: JobApplicationComment[]
+      meta: { comments_count: number }
+    }>(`/recruiter/applications/${applicationId}/comments`),
+
+  createRecruiterApplicationComment: (applicationId: number | string, body: string) =>
+    request<{
+      success: boolean
+      data: JobApplicationComment
+      meta?: { comments_count: number }
+      errors?: Record<string, string[]>
+    }>(`/recruiter/applications/${applicationId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ comment: { body } }),
+    }),
+
+  deleteRecruiterApplicationComment: (applicationId: number | string, commentId: number) =>
+    request<{
+      success: boolean
+      meta?: { comments_count: number }
+    }>(`/recruiter/applications/${applicationId}/comments/${commentId}`, { method: 'DELETE' }),
+
+  fetchTalentProfiles: (
+    params: {
+      search?: string
+      location?: string
+      experience?: string | number
+      skills?: string
+      company?: string
+      page?: number
+    } = {},
+  ) =>
+    request<Paginated<TalentProfile>>(
+      `/recruiter/profiles${toQuery({
+        search: params.search,
+        location: params.location,
+        experience: params.experience,
+        skills: params.skills,
+        company: params.company,
+        page: params.page,
+      })}`,
+    ),
+
+  fetchTalentProfile: (id: number | string) =>
+    request<{ data: TalentProfile }>(`/recruiter/profiles/${id}`),
+
+  fetchRecruiterAccount: () =>
+    request<{ data: RecruiterProfile; exists: boolean }>('/recruiter/account'),
+
+  updateRecruiterAccount: (form: FormData) =>
+    request<{
+      success: boolean
+      message: string
+      data: RecruiterProfile
+      user?: User
+      errors?: Record<string, string[]>
+    }>('/recruiter/account', { method: 'PATCH', body: form }),
+
+  fetchSavedProfiles: (page = 1) =>
+    request<Paginated<TalentProfile>>(`/recruiter/saved_profiles${toQuery({ page })}`),
+
+  saveProfile: (developerProfileId: number | string) =>
+    request<{ success: boolean; message: string; saved: boolean; data?: TalentProfile }>(
+      '/recruiter/saved_profiles',
+      {
+        method: 'POST',
+        body: JSON.stringify({ developer_profile_id: developerProfileId }),
+      },
+    ),
+
+  unsaveProfile: (developerProfileId: number | string) =>
+    request<{ success: boolean; message: string; saved: boolean }>(
+      `/recruiter/saved_profiles/${developerProfileId}`,
+      { method: 'DELETE' },
+    ),
+
+  createCompany: (payload: {
+    name: string
+    website?: string
+    headquarter?: string
+    company_type?: string
+  }) =>
+    request<{ success: boolean; message: string; data: Company; errors?: string[] }>('/companies', {
+      method: 'POST',
+      body: JSON.stringify({ company: payload }),
+    }),
+
+  fetchCompanies: (params: { search?: string; page?: number; per_page?: number } = {}) =>
+    request<Paginated<Company>>(
+      `/companies${toQuery({ search: params.search, page: params.page, per_page: params.per_page })}`,
+    ),
   fetchCompany: (id: string | number) =>
     request<{ data: Company; jobs: Job[] }>(`/companies/${id}`),
 

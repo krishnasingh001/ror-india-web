@@ -1,0 +1,13 @@
+This is the ROR World recruiter experience — built for teams hiring Ruby on Rails talent.
+
+Recruiters sign in to a hiring dashboard: posted jobs, applications, and open talent in one view.
+
+They keep their recruiter profile current, then add a company and publish a role in minutes.
+
+My Jobs is where openings are managed — status, applicants, and edits in one list.
+
+On the Applications board, recruiters review candidates on a Kanban pipeline. Open any card to see skills, resume, and profile details, update status, and leave comments for the hiring team.
+
+Then browse the talent marketplace, save strong profiles, and build a shortlist.
+
+ROR World helps recruiters move from posting a Rails job to shortlisting the right developers — faster and with less tooling sprawl.

@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { Layout } from '@/components/Layout'
-import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { ProtectedRoute, RecruiterRoute, CandidateRoute } from '@/components/ProtectedRoute'
 import { AboutPage } from '@/pages/AboutPage'
 import { BlogEditorPage } from '@/pages/BlogEditorPage'
 import { BlogPage } from '@/pages/BlogPage'
@@ -12,7 +12,6 @@ import { CompanyShowPage } from '@/pages/CompanyShowPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { CookiePolicyPage } from '@/pages/CookiePolicyPage'
 import { DashboardPage } from '@/pages/DashboardPage'
-import { ExternalApplicationsPage } from '@/pages/ExternalApplicationsPage'
 import { GdprCompliancePage } from '@/pages/GdprCompliancePage'
 import { HomePage } from '@/pages/HomePage'
 import { JobShowPage } from '@/pages/JobShowPage'
@@ -20,6 +19,15 @@ import { MyBlogPostsPage } from '@/pages/MyBlogPostsPage'
 import { PrivacyPolicyPage } from '@/pages/PrivacyPolicyPage'
 import { ProfileEditPage } from '@/pages/ProfileEditPage'
 import { ProfilePage } from '@/pages/ProfilePage'
+import { JobFormPage } from '@/pages/recruiter/JobFormPage'
+import { MyJobsPage } from '@/pages/recruiter/MyJobsPage'
+import { CompanyFormPage } from '@/pages/recruiter/CompanyFormPage'
+import { RecruiterApplicationsPage } from '@/pages/recruiter/RecruiterApplicationsPage'
+import { SavedProfilesPage } from '@/pages/recruiter/SavedProfilesPage'
+import { TalentBrowsePage } from '@/pages/recruiter/TalentBrowsePage'
+import { TalentProfilePage } from '@/pages/recruiter/TalentProfilePage'
+import { RecruiterProfilePage } from '@/pages/recruiter/RecruiterProfilePage'
+import { TrackApplicationsRouter } from '@/pages/TrackApplicationsRouter'
 import { SavedJobsPage } from '@/pages/SavedJobsPage'
 import { ShopPage } from '@/pages/ShopPage'
 import { SignInPage } from '@/pages/SignInPage'
@@ -34,33 +42,105 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
+            <Route
+              path="jobs/new"
+              element={
+                <RecruiterRoute>
+                  <JobFormPage />
+                </RecruiterRoute>
+              }
+            />
+            <Route
+              path="jobs/:id/edit"
+              element={
+                <RecruiterRoute>
+                  <JobFormPage />
+                </RecruiterRoute>
+              }
+            />
             <Route path="jobs/:id" element={<JobShowPage />} />
+            <Route
+              path="my-jobs"
+              element={
+                <RecruiterRoute>
+                  <MyJobsPage />
+                </RecruiterRoute>
+              }
+            />
+            <Route
+              path="recruiter/applications"
+              element={
+                <RecruiterRoute>
+                  <RecruiterApplicationsPage />
+                </RecruiterRoute>
+              }
+            />
+            <Route
+              path="talent"
+              element={
+                <RecruiterRoute>
+                  <TalentBrowsePage />
+                </RecruiterRoute>
+              }
+            />
+            <Route
+              path="talent/:id"
+              element={
+                <RecruiterRoute>
+                  <TalentProfilePage />
+                </RecruiterRoute>
+              }
+            />
+            <Route
+              path="saved-profiles"
+              element={
+                <RecruiterRoute>
+                  <SavedProfilesPage />
+                </RecruiterRoute>
+              }
+            />
+            <Route
+              path="recruiter/profile"
+              element={
+                <RecruiterRoute>
+                  <RecruiterProfilePage />
+                </RecruiterRoute>
+              }
+            />
+            <Route
+              path="companies/new"
+              element={
+                <RecruiterRoute>
+                  <CompanyFormPage />
+                </RecruiterRoute>
+              }
+            />
             <Route path="companies" element={<CompaniesPage />} />
             <Route path="companies/:id" element={<CompanyShowPage />} />
             <Route path="blog" element={<BlogPage />} />
             <Route
               path="blog/new"
               element={
-                <ProtectedRoute>
+                <CandidateRoute>
                   <BlogEditorPage />
-                </ProtectedRoute>
+                </CandidateRoute>
               }
             />
             <Route
               path="blog/:slug/edit"
               element={
-                <ProtectedRoute>
+                <CandidateRoute>
                   <BlogEditorPage />
-                </ProtectedRoute>
+                </CandidateRoute>
               }
             />
             <Route path="blog/:slug" element={<BlogShowPage />} />
             <Route
               path="my-blog-posts"
               element={
-                <ProtectedRoute>
+                <CandidateRoute>
                   <MyBlogPostsPage />
-                </ProtectedRoute>
+                </CandidateRoute>
               }
             />
             <Route path="sign-in" element={<SignInPage />} />
@@ -76,35 +156,29 @@ export default function App() {
             <Route
               path="saved-jobs"
               element={
-                <ProtectedRoute>
+                <CandidateRoute>
                   <SavedJobsPage />
-                </ProtectedRoute>
+                </CandidateRoute>
               }
             />
-            <Route
-              path="track-applications"
-              element={
-                <ProtectedRoute>
-                  <ExternalApplicationsPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="track-applications" element={<TrackApplicationsRouter />} />
             <Route path="applications" element={<Navigate to="/track-applications" replace />} />
             <Route path="external-applications" element={<Navigate to="/track-applications" replace />} />
+            <Route path="recruiter" element={<Navigate to="/dashboard" replace />} />
             <Route
               path="profile"
               element={
-                <ProtectedRoute>
+                <CandidateRoute>
                   <ProfilePage />
-                </ProtectedRoute>
+                </CandidateRoute>
               }
             />
             <Route
               path="profile/edit"
               element={
-                <ProtectedRoute>
+                <CandidateRoute>
                   <ProfileEditPage />
-                </ProtectedRoute>
+                </CandidateRoute>
               }
             />
             <Route path="about" element={<AboutPage />} />

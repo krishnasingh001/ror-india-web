@@ -6,7 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "demo:recruiter": "playwright test e2e/recruiter-flow.spec.ts --project=chromium",
+    "demo:recruiter:ui": "playwright test e2e/recruiter-flow.spec.ts --ui",
+    "demo:recruiter:collect": "node scripts/collect-demo-video.mjs recruiter-flow",
+    "demo:pitch": "playwright test e2e/client-investor-demo.spec.ts --project=chromium",
+    "demo:pitch:collect": "node scripts/collect-demo-video.mjs client-investor-demo",
+    "demo:voiceover": "bash scripts/add-voiceover.sh",
+    "demo:voiceover:synced": "bash scripts/add-synced-voiceover.sh",
+    "demo:pitch:voice": "bash scripts/add-voiceover.sh",
+    "demo:pitch:voice:synced": "bash scripts/add-synced-voiceover.sh",
+    "demo:pitch:narrate": ".venv-kokoro/bin/python scripts/generate-investor-narration.py",
+    "demo:pitch:flow": "bash scripts/mux-investor-flow.sh",
+    "demo:investor": "npm run demo:pitch:narrate && DEMO_SLOW_MO=280 npm run demo:pitch && npm run demo:pitch:collect && node -e \"const fs=require('fs');const p='demo-videos';const v=fs.readdirSync(p).filter(f=>f.startsWith('client-investor-demo-')&&f.endsWith('.webm')).sort().pop();const t=v.replace('.webm','.timeline.json');console.log(v);require('child_process').execSync('bash scripts/mux-investor-flow.sh '+p+'/'+v+' '+p+'/'+t,{stdio:'inherit'})\""
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -23,6 +35,7 @@
     "react-router-dom": "^6.30.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "@types/node": "^22.20.2",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",

@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { BrandLogo } from '@/components/BrandLogo'
 import { api } from '@/lib/api'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth, useIsRecruiter } from '@/context/AuthContext'
 
 function formatStat(n: number) {
   if (n >= 1000) return `${Math.floor(n / 100) / 10}k+`
@@ -11,6 +11,7 @@ function formatStat(n: number) {
 
 export function SiteFooter() {
   const { user } = useAuth()
+  const isRecruiter = useIsRecruiter()
   const year = new Date().getFullYear()
   const [email, setEmail] = useState('')
   const [busy, setBusy] = useState(false)
@@ -58,21 +59,32 @@ export function SiteFooter() {
     }
   }
 
-  const exploreLinks = [
-    { label: 'Jobs', to: '/' },
-    { label: 'Companies', to: '/companies' },
-    { label: 'Blog', to: '/blog' },
-    ...(user
-      ? [
-          { label: 'Dashboard', to: '/dashboard' },
-          { label: 'Track Applications', to: '/track-applications' },
-          { label: 'Saved Jobs', to: '/saved-jobs' },
-        ]
-      : [
-          { label: 'Sign in', to: '/sign-in' },
-          { label: 'Sign up', to: '/sign-up' },
-        ]),
-  ]
+  const exploreLinks = isRecruiter
+    ? [
+        { label: 'Dashboard', to: '/dashboard' },
+        { label: 'My profile', to: '/recruiter/profile' },
+        { label: 'Post a job', to: '/jobs/new' },
+        { label: 'Add company', to: '/companies/new' },
+        { label: 'My jobs', to: '/my-jobs' },
+        { label: 'Track applications', to: '/recruiter/applications' },
+        { label: 'Companies', to: '/companies' },
+        { label: 'Browse talent', to: '/talent' },
+      ]
+    : [
+        { label: 'Jobs', to: '/' },
+        { label: 'Companies', to: '/companies' },
+        { label: 'Blog', to: '/blog' },
+        ...(user
+          ? [
+              { label: 'Dashboard', to: '/dashboard' },
+              { label: 'Track Applications', to: '/track-applications' },
+              { label: 'Saved Jobs', to: '/saved-jobs' },
+            ]
+          : [
+              { label: 'Sign in', to: '/sign-in' },
+              { label: 'Sign up', to: '/sign-up' },
+            ]),
+      ]
 
   const companyLinks = [
     { label: 'About Us', to: '/about' },

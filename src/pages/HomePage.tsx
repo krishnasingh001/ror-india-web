@@ -1,7 +1,9 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { JobCard } from '@/components/JobCard'
 import { Pagination } from '@/components/Pagination'
 import { SelectMenu } from '@/components/SelectMenu'
+import { useIsRecruiter } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { Job, JobFilters } from '@/types'
 
@@ -13,6 +15,7 @@ const SORT_OPTIONS = [
 ]
 
 export function HomePage() {
+  const isRecruiter = useIsRecruiter()
   const [jobs, setJobs] = useState<Job[]>([])
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
@@ -30,6 +33,7 @@ export function HomePage() {
   const [subscribeErr, setSubscribeErr] = useState<string | null>(null)
 
   useEffect(() => {
+    if (isRecruiter) return
     let cancelled = false
     setLoading(true)
     setError(null)
@@ -54,7 +58,7 @@ export function HomePage() {
     return () => {
       cancelled = true
     }
-  }, [filters])
+  }, [filters, isRecruiter])
 
   function goToPage(page: number) {
     setFilters((prev) => ({ ...prev, page }))
@@ -86,6 +90,10 @@ export function HomePage() {
     } finally {
       setSubscribeBusy(false)
     }
+  }
+
+  if (isRecruiter) {
+    return <Navigate to="/dashboard" replace />
   }
 
   return (

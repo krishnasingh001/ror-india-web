@@ -1,0 +1,49 @@
+{
+  "kind": "investor-flow",
+  "engine": "kokoro",
+  "voice": "af_heart",
+  "speed": 0.95,
+  "gapMs": 280,
+  "beats": [
+    {
+      "id": "welcome",
+      "text": "Hi — I'm walking you through ROR World. It's the marketplace built for Ruby on Rails talent and the companies hiring them."
+    },
+    {
+      "id": "landing",
+      "text": "This is the public job board. Curated Rails roles from teams around the world — search, filter, and apply without noise from other stacks."
+    },
+    {
+      "id": "companies",
+      "text": "Employers show up in the company directory, so candidates can see who's hiring and dig into each brand."
+    },
+    {
+      "id": "candidate_hub",
+      "text": "Now the candidate side. Developers sign in to a personal hub — applications, saved jobs, and profile progress in one place."
+    },
+    {
+      "id": "search_apply",
+      "text": "They search for Rails roles, open a job, apply in one click, and save anything they want to revisit."
+    },
+    {
+      "id": "track_ats",
+      "text": "Every candidate also gets Track Applications — a lightweight personal ATS across Applied, Screening, Interview, and Offer. Useful when you're interviewing at more than one company."
+    },
+    {
+      "id": "hiring_switch",
+      "text": "Switching to hiring. Recruiters land on a dashboard with posted jobs, applicants, and open talent at a glance."
+    },
+    {
+      "id": "profile_company_job",
+      "text": "They keep a recruiter profile current, add their company brand, then publish a Rails role — title, skills, salary, and location. From blank form to a live opening in a couple of minutes."
+    },
+    {
+      "id": "applications",
+      "text": "My Jobs keeps openings organized. On the Applications board, recruiters review candidates on a Kanban pipeline. Open any card for the resume and profile, update status, and leave a note for the hiring team — all without leaving the workflow."
+    },
+    {
+      "id": "talent_close",
+      "text": "And when you need more pipeline, browse the talent marketplace, save strong Rails profiles, and build a shortlist. That's ROR World — connecting Rails talent with the teams that need them."
+    }
+  ]
+}

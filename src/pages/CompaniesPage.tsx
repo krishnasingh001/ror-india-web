@@ -1,10 +1,13 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CompanyCard } from '@/components/CompanyCard'
 import { Pagination } from '@/components/Pagination'
+import { useIsRecruiter } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { Company } from '@/types'
 
 export function CompaniesPage() {
+  const isRecruiter = useIsRecruiter()
   const [companies, setCompanies] = useState<Company[]>([])
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
@@ -59,15 +62,34 @@ export function CompaniesPage() {
     <div>
       <section className="hero-surface">
         <div className="container-page py-10 sm:py-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">
-            Companies hiring Rails
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-            Explore top <span className="text-brand">Rails companies</span>
-          </h1>
-          <p className="mt-3 max-w-xl text-sm text-ink-muted sm:text-base">
-            Discover teams, follow the ones you care about, and jump into open roles.
-          </p>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">
+                {isRecruiter ? 'Hiring' : 'Companies hiring Rails'}
+              </p>
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+                {isRecruiter ? (
+                  <>
+                    Manage <span className="text-brand">companies</span>
+                  </>
+                ) : (
+                  <>
+                    Explore top <span className="text-brand">Rails companies</span>
+                  </>
+                )}
+              </h1>
+              <p className="mt-3 max-w-xl text-sm text-ink-muted sm:text-base">
+                {isRecruiter
+                  ? 'Add your company, then attach it when you post Rails roles.'
+                  : 'Discover teams, follow the ones you care about, and jump into open roles.'}
+              </p>
+            </div>
+            {isRecruiter && (
+              <Link to="/companies/new" className="btn-primary cursor-pointer shrink-0">
+                Add company
+              </Link>
+            )}
+          </div>
 
           <form
             onSubmit={onSearch}
@@ -85,7 +107,7 @@ export function CompaniesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <button type="submit" className="btn-primary shrink-0 sm:px-6">
+            <button type="submit" className="btn-primary shrink-0 cursor-pointer sm:px-6">
               Search
             </button>
           </form>

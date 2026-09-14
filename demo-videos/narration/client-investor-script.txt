@@ -1,0 +1,21 @@
+Welcome to ROR World — the marketplace built for Ruby on Rails talent and the teams that hire them.
+
+We open on the public job board: curated Rails roles from companies hiring around the world.
+
+Next, the company directory — where employers show up, and candidates discover who is hiring.
+
+Now the candidate experience. Developers sign in to a personal job-search hub — applications, saved roles, and profile progress in one place.
+
+They search the board, open a role, apply in one click, and save jobs for later.
+
+Every candidate also gets Track Applications — a personal ATS to manage outreach across Applied, Screening, Interview, and Offer.
+
+Switching to hiring. Recruiters land on a dedicated dashboard with jobs posted, applicants, and open talent at a glance.
+
+They update their recruiter profile, add a company, and publish a Rails job in minutes.
+
+From My Jobs they manage openings. On the Applications board they review candidates, change pipeline status, leave comments, and open resumes — without leaving the workflow.
+
+Finally, the talent marketplace: browse Rails developers, save profiles, and build a shortlist.
+
+ROR World connects Rails talent with the teams that need them — for candidates, recruiters, and investors building the next wave of product companies.

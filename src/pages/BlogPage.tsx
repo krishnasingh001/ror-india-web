@@ -1,12 +1,13 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { Pagination } from '@/components/Pagination'
 import { api } from '@/lib/api'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth, useIsRecruiter } from '@/context/AuthContext'
 import type { BlogPost } from '@/types'
 
 export function BlogPage() {
   const { user } = useAuth()
+  const isRecruiter = useIsRecruiter()
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
@@ -55,6 +56,10 @@ export function BlogPage() {
   function goToPage(next: number) {
     setPage(next)
     listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  if (isRecruiter) {
+    return <Navigate to="/dashboard" replace />
   }
 
   return (

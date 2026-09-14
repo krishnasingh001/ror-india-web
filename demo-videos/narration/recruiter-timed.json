@@ -1,0 +1,16 @@
+{
+  "kind": "recruiter",
+  "voiceHint": "en-IN-NeerjaNeural",
+  "lines": {
+    "Sign in as recruiter": "ROR World for recruiters — hire Ruby on Rails talent.",
+    "Hiring dashboard overview": "Posted jobs, applications, and open talent in one view.",
+    "Update recruiter profile": "Keep your recruiter profile current for candidates.",
+    "Add a company": "Add a company brand, then you are ready to hire.",
+    "Post a job": "Publish a Rails role in minutes.",
+    "Browse my jobs": "My Jobs manages openings, status, and applicants.",
+    "Applications board + applicant modal": "Open any card to review resume, update status, and comment.",
+    "Browse talent and save a profile": "Browse talent and save strong Rails profiles.",
+    "Saved profiles": "Saved profiles become your shortlist.",
+    "Return to dashboard": "From posting a Rails job to shortlisting — faster."
+  }
+}

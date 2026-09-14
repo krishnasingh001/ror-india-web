@@ -18,7 +18,11 @@ export function SignInPage() {
     setError(null)
     try {
       const res = await login(email, password)
-      navigate(from !== '/sign-in' ? from : res.redirect_to || '/dashboard')
+      const dest =
+        from && from !== '/sign-in' && from !== '/'
+          ? from
+          : res.redirect_to || '/dashboard'
+      navigate(dest)
     } catch (err: unknown) {
       const e2 = err as { message?: string }
       setError(e2.message || 'Sign in failed')

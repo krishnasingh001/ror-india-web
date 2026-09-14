@@ -1,0 +1,91 @@
+{
+  "engine": "kokoro",
+  "voice": "af_heart",
+  "speed": 0.95,
+  "sampleRate": 24000,
+  "gapMs": 280,
+  "totalDuration": 104.82,
+  "m4a": "demo-videos/narration/investor-flow.m4a",
+  "beats": [
+    {
+      "id": "welcome",
+      "text": "Hi \u2014 I'm walking you through ROR World. It's the marketplace built for Ruby on Rails talent and the companies hiring them.",
+      "start": 0.0,
+      "duration": 8.5,
+      "durationMs": 8500,
+      "wav": "demo-videos/narration/beats/00-welcome.wav"
+    },
+    {
+      "id": "landing",
+      "text": "This is the public job board. Curated Rails roles from teams around the world \u2014 search, filter, and apply without noise from other stacks.",
+      "start": 8.78,
+      "duration": 9.625,
+      "durationMs": 9625,
+      "wav": "demo-videos/narration/beats/01-landing.wav"
+    },
+    {
+      "id": "companies",
+      "text": "Employers show up in the company directory, so candidates can see who's hiring and dig into each brand.",
+      "start": 18.685,
+      "duration": 6.8,
+      "durationMs": 6800,
+      "wav": "demo-videos/narration/beats/02-companies.wav"
+    },
+    {
+      "id": "candidate_hub",
+      "text": "Now the candidate side. Developers sign in to a personal hub \u2014 applications, saved jobs, and profile progress in one place.",
+      "start": 25.765,
+      "duration": 8.95,
+      "durationMs": 8950,
+      "wav": "demo-videos/narration/beats/03-candidate_hub.wav"
+    },
+    {
+      "id": "search_apply",
+      "text": "They search for Rails roles, open a job, apply in one click, and save anything they want to revisit.",
+      "start": 34.995,
+      "duration": 6.85,
+      "durationMs": 6850,
+      "wav": "demo-videos/narration/beats/04-search_apply.wav"
+    },
+    {
+      "id": "track_ats",
+      "text": "Every candidate also gets Track Applications \u2014 a lightweight personal ATS across Applied, Screening, Interview, and Offer. Useful when you're interviewing at more than one company.",
+      "start": 42.125,
+      "duration": 11.975,
+      "durationMs": 11975,
+      "wav": "demo-videos/narration/beats/05-track_ats.wav"
+    },
+    {
+      "id": "hiring_switch",
+      "text": "Switching to hiring. Recruiters land on a dashboard with posted jobs, applicants, and open talent at a glance.",
+      "start": 54.38,
+      "duration": 7.95,
+      "durationMs": 7950,
+      "wav": "demo-videos/narration/beats/06-hiring_switch.wav"
+    },
+    {
+      "id": "profile_company_job",
+      "text": "They keep a recruiter profile current, add their company brand, then publish a Rails role \u2014 title, skills, salary, and location. From blank form to a live opening in a couple of minutes.",
+      "start": 62.61,
+      "duration": 12.6,
+      "durationMs": 12600,
+      "wav": "demo-videos/narration/beats/07-profile_company_job.wav"
+    },
+    {
+      "id": "applications",
+      "text": "My Jobs keeps openings organized. On the Applications board, recruiters review candidates on a Kanban pipeline. Open any card for the resume and profile, update status, and leave a note for the hiring team \u2014 all without leaving the workflow.",
+      "start": 75.49,
+      "duration": 16.65,
+      "durationMs": 16650,
+      "wav": "demo-videos/narration/beats/08-applications.wav"
+    },
+    {
+      "id": "talent_close",
+      "text": "And when you need more pipeline, browse the talent marketplace, save strong Rails profiles, and build a shortlist. That's ROR World \u2014 connecting Rails talent with the teams that need them.",
+      "start": 92.42,
+      "duration": 12.4,
+      "durationMs": 12400,
+      "wav": "demo-videos/narration/beats/09-talent_close.wav"
+    }
+  ]
+}

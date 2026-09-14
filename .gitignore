@@ -13,3 +13,12 @@ dist-ssr
 
 tsconfig.tsbuildinfo
 dist
+.venv-demo/
+.venv-kokoro/
+demo-output/
+demo-report/
+demo-videos/*
+!demo-videos/narration/
+!demo-videos/narration/**
+playwright-report/
+test-results/

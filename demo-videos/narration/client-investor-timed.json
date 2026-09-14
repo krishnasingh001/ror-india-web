@@ -1,0 +1,27 @@
+{
+  "kind": "client-investor",
+  "voiceHint": "en-IN-NeerjaNeural",
+  "lines": {
+    "Brand landing — Rails jobs worldwide": "Welcome to ROR World — Rails talent and the teams that hire them.",
+    "About — product story for investors": "One product connecting Rails developers with hiring companies.",
+    "Public companies directory": "The company directory — employers hiring Rails talent.",
+    "Candidate signs in": "Candidates sign in to a personal job-search hub.",
+    "Candidate dashboard": "Tracked applications, saved jobs, and profile progress.",
+    "Search Rails jobs on the board": "Search the board for Rails roles that fit.",
+    "Open a job and apply / save": "Open a role, apply in one click, and save for later.",
+    "Saved jobs": "Saved jobs stay in one list to revisit.",
+    "Candidate profile": "A complete profile helps recruiters find you.",
+    "Track applications board (candidate ATS)": "Track Applications — your personal ATS across Applied, Screening, Interview, and Offer.",
+    "Candidate logs out": "That is the candidate loop. Next — hiring.",
+    "Recruiter signs in": "Recruiters sign in to a hiring dashboard.",
+    "Hiring dashboard KPIs": "Jobs, applications, and open talent at a glance.",
+    "Recruiter profile": "Keep a recruiter profile so candidates know who is hiring.",
+    "Add company for hiring brand": "Add a company brand in seconds.",
+    "Post a Rails job in minutes": "Publish a Rails job — title, skills, salary, company.",
+    "Manage posted jobs": "My Jobs manages every opening.",
+    "Applications Kanban — review candidates": "Review candidates, update status, comment, and open resumes.",
+    "Talent marketplace — discover Rails developers": "Browse talent and save strong Rails profiles.",
+    "Saved talent shortlist": "Saved profiles become your hiring shortlist.",
+    "Close on hiring dashboard": "ROR World connects Rails talent with the teams that need them."
+  }
+}

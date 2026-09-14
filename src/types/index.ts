@@ -18,6 +18,8 @@ export type Job = {
   experience_label: string | null
   seniority?: string | null
   job_type: string
+  job_type_id?: string | number | null
+  company_id?: number | null
   min_salary: number | null
   max_salary: number | null
   salary_label: string | null
@@ -27,10 +29,127 @@ export type Job = {
   posted_on: string
   posted_label?: string | null
   description_html?: string | null
+  description?: string | null
   skills?: string[]
   company: CompanySummary | null
   saved?: boolean
   applied?: boolean
+  active?: boolean
+  email?: string | null
+  application_deadline?: string | null
+  applications_count?: number
+  views_count?: number
+}
+
+export type JobTypeOption = {
+  id: number
+  name: string
+}
+
+export type JobFormInput = {
+  title: string
+  description: string
+  job_type_id?: string | number | null
+  location?: string
+  min_salary?: number | string | null
+  max_salary?: number | string | null
+  experience_level?: string
+  application_deadline?: string | null
+  email?: string
+  company_id?: number | string | null
+  active?: boolean
+  skills_required?: string
+}
+
+export type RecruiterProfile = {
+  id: number | null
+  full_name: string | null
+  email: string | null
+  job_title: string | null
+  phone: string | null
+  company_name: string | null
+  location: string | null
+  linkedin_url: string | null
+  website: string | null
+  bio: string | null
+  avatar_url: string | null
+  profile_picture_url: string | null
+}
+
+export type RecruiterApplicationStatus =
+  | 'applied'
+  | 'reviewing'
+  | 'shortlisted'
+  | 'rejected'
+  | 'hired'
+
+export type RecruiterApplication = {
+  id: number
+  status: RecruiterApplicationStatus | string
+  status_display: string
+  applied_at: string | null
+  applied_ago: string | null
+  created_at: string
+  comments_count?: number | null
+  candidate: {
+    id: number
+    name: string | null
+    email: string | null
+    avatar: string | null
+    profile_id: number | null
+    phone?: string | null
+    current_role?: string | null
+    current_company?: string | null
+    location?: string | null
+    experience?: number | null
+  }
+  job: Job
+  profile?: TalentProfile | null
+}
+
+export type JobApplicationComment = {
+  id: number
+  body: string
+  user_id: number
+  user_name: string | null
+  user_initials: string
+  created_at: string
+  created_ago: string
+  can_delete: boolean
+}
+
+export type TalentProfile = {
+  id: number
+  full_name: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  location?: string | null
+  experience?: number | null
+  current_role?: string | null
+  current_company?: string | null
+  skills?: string[]
+  profile_picture_url?: string | null
+  open_to_recruiters?: boolean
+  saved?: boolean
+  phone?: string | null
+  bio?: string | null
+  career_summary?: string | null
+  preferred_locations?: string[]
+  notice_period?: string | null
+  job_type?: string | null
+  shift_preference?: string | null
+  linkedin_profile?: string | null
+  github_profile?: string | null
+  portfolio_website?: string | null
+  work_experience_details?: string[]
+  highest_qualification?: string | null
+  university?: string | null
+  graduation_year?: number | null
+  expected_ctc_label?: string | null
+  resume?: ProfileAttachment | null
+  saved_at?: string | null
+  saved_profile_id?: number
 }
 
 export type CompanySummary = {
@@ -291,8 +410,11 @@ export type DashboardData = {
     followed_companies?: number
     profile_completion?: number
     posted_jobs?: number
+    pending_applications?: number
+    open_profiles?: number
+    saved_profiles?: number
   }
-  recent_applications?: ApplicationItem[]
+  recent_applications?: ApplicationItem[] | RecruiterApplication[]
   recent_external_applications?: ExternalApplication[]
   recent_saved_jobs?: Array<{ id: number; created_at: string; job: Job }>
   followed_companies?: Company[]

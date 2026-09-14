@@ -3,7 +3,7 @@ import { AtmosphereBackground } from '@/components/AtmosphereBackground'
 import { BrandLogo } from '@/components/BrandLogo'
 import { SiteFooter } from '@/components/SiteFooter'
 import { UserMenu } from '@/components/UserMenu'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth, useIsRecruiter } from '@/context/AuthContext'
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -15,30 +15,57 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Layout() {
   const { user, loading } = useAuth()
+  const isRecruiter = useIsRecruiter()
 
   return (
     <div className="atmosphere app-shell">
       <AtmosphereBackground />
       <header className="site-header">
         <div className="container-page flex h-[4.25rem] items-center justify-between gap-4 sm:h-[4.5rem]">
-          <Link to="/" className="flex shrink-0 cursor-pointer items-center" aria-label="ROR World home">
+          <Link
+            to={isRecruiter ? '/dashboard' : '/'}
+            className="flex shrink-0 cursor-pointer items-center"
+            aria-label="ROR World home"
+          >
             <BrandLogo />
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex">
-            <NavLink to="/" end className={navClass}>
-              Jobs
-            </NavLink>
-            <NavLink to="/companies" className={navClass}>
-              Companies
-            </NavLink>
-            <NavLink to="/blog" className={navClass}>
-              Blog
-            </NavLink>
-            {user && (
-              <NavLink to="/dashboard" className={navClass}>
-                Dashboard
-              </NavLink>
+          <nav className="hidden items-center gap-1 lg:flex">
+            {isRecruiter ? (
+              <>
+                <NavLink to="/dashboard" className={navClass}>
+                  Dashboard
+                </NavLink>
+                <NavLink to="/my-jobs" className={navClass}>
+                  My jobs
+                </NavLink>
+                <NavLink to="/recruiter/applications" className={navClass}>
+                  Track applications
+                </NavLink>
+                <NavLink to="/companies" className={navClass}>
+                  Companies
+                </NavLink>
+                <NavLink to="/talent" className={navClass}>
+                  Talent
+                </NavLink>
+              </>
+            ) : (
+              <>
+                <NavLink to="/" end className={navClass}>
+                  Jobs
+                </NavLink>
+                <NavLink to="/companies" className={navClass}>
+                  Companies
+                </NavLink>
+                <NavLink to="/blog" className={navClass}>
+                  Blog
+                </NavLink>
+                {user && (
+                  <NavLink to="/dashboard" className={navClass}>
+                    Dashboard
+                  </NavLink>
+                )}
+              </>
             )}
           </nav>
 
@@ -46,7 +73,19 @@ export function Layout() {
             {loading ? (
               <div className="h-9 w-24 animate-pulse rounded-full bg-slate-200/70" />
             ) : user ? (
-              <UserMenu />
+              <>
+                {isRecruiter && (
+                  <>
+                    <Link to="/companies/new" className="btn-secondary hidden !py-2 md:inline-flex">
+                      Add company
+                    </Link>
+                    <Link to="/jobs/new" className="btn-primary hidden !py-2 sm:inline-flex">
+                      Post a job
+                    </Link>
+                  </>
+                )}
+                <UserMenu />
+              </>
             ) : (
               <>
                 <Link to="/sign-in" className="btn-secondary !py-2">
