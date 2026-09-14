@@ -1,13 +1,16 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AddCatalogCard } from '@/components/AddCatalogCard'
+import { LockedCatalog } from '@/components/BrowseGate'
 import { CompanyCard } from '@/components/CompanyCard'
 import { Pagination } from '@/components/Pagination'
-import { useIsRecruiter } from '@/context/AuthContext'
+import { useCanBrowseFullCatalog, useIsRecruiter } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { Company } from '@/types'
 
 export function CompaniesPage() {
   const isRecruiter = useIsRecruiter()
+  const canBrowseFull = useCanBrowseFullCatalog()
   const [companies, setCompanies] = useState<Company[]>([])
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
@@ -20,6 +23,11 @@ export function CompaniesPage() {
   const listRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
+    if (!canBrowseFull && page > 1) {
+      setPage(1)
+      return
+    }
+
     let cancelled = false
     setLoading(true)
     setError(null)
@@ -45,7 +53,7 @@ export function CompaniesPage() {
     return () => {
       cancelled = true
     }
-  }, [query, page])
+  }, [query, page, canBrowseFull])
 
   function onSearch(e: FormEvent) {
     e.preventDefault()
@@ -54,6 +62,10 @@ export function CompaniesPage() {
   }
 
   function goToPage(next: number) {
+    if (next > 1 && !canBrowseFull) {
+      listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
     setPage(next)
     listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -142,24 +154,33 @@ export function CompaniesPage() {
             ))}
           </div>
         ) : companies.length === 0 && !error ? (
-          <div className="mt-10 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-            <h2 className="text-base font-semibold text-ink">No companies found</h2>
-            <p className="mt-2 text-sm text-ink-muted">Try a different search.</p>
-          </div>
+          <ul className="mt-6 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <li>
+              <AddCatalogCard kind="company" />
+            </li>
+          </ul>
         ) : (
           <>
-            <ul className="mt-6 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {companies.map((c) => (
-                <li key={c.id}>
-                  <CompanyCard
-                    company={c}
-                    onChange={(next) =>
-                      setCompanies((prev) => prev.map((x) => (x.id === next.id ? next : x)))
-                    }
-                  />
+            <LockedCatalog
+              locked={!canBrowseFull && companies.length > 2}
+              resourceLabel="companies"
+            >
+              <ul className="mt-6 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <li className="relative z-30">
+                  <AddCatalogCard kind="company" />
                 </li>
-              ))}
-            </ul>
+                {companies.map((c) => (
+                  <li key={c.id}>
+                    <CompanyCard
+                      company={c}
+                      onChange={(next) =>
+                        setCompanies((prev) => prev.map((x) => (x.id === next.id ? next : x)))
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            </LockedCatalog>
 
             <Pagination
               page={page}

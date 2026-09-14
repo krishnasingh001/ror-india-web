@@ -95,3 +95,11 @@ export function useIsRecruiter() {
   const role = user?.role?.toString().toLowerCase().trim()
   return role === 'recruiter' || role === 'admin'
 }
+
+/** Full job/company catalog (pagination + detail) requires a developer profile. Recruiters/admins bypass. */
+export function useCanBrowseFullCatalog() {
+  const { user } = useAuth()
+  const isRecruiter = useIsRecruiter()
+  if (isRecruiter) return true
+  return Boolean(user?.has_profile)
+}

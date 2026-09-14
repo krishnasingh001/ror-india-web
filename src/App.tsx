@@ -2,7 +2,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { Layout } from '@/components/Layout'
 import { ProtectedRoute, RecruiterRoute, CandidateRoute } from '@/components/ProtectedRoute'
+import { RequireBrowseAccess } from '@/components/BrowseGate'
 import { AboutPage } from '@/pages/AboutPage'
+import { AdminRedirect } from '@/pages/AdminRedirect'
 import { BlogEditorPage } from '@/pages/BlogEditorPage'
 import { BlogPage } from '@/pages/BlogPage'
 import { BlogShowPage } from '@/pages/BlogShowPage'
@@ -40,6 +42,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="admin/*" element={<AdminRedirect />} />
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route
@@ -58,7 +61,14 @@ export default function App() {
                 </RecruiterRoute>
               }
             />
-            <Route path="jobs/:id" element={<JobShowPage />} />
+            <Route
+              path="jobs/:id"
+              element={
+                <RequireBrowseAccess>
+                  <JobShowPage />
+                </RequireBrowseAccess>
+              }
+            />
             <Route
               path="my-jobs"
               element={
@@ -116,7 +126,14 @@ export default function App() {
               }
             />
             <Route path="companies" element={<CompaniesPage />} />
-            <Route path="companies/:id" element={<CompanyShowPage />} />
+            <Route
+              path="companies/:id"
+              element={
+                <RequireBrowseAccess>
+                  <CompanyShowPage />
+                </RequireBrowseAccess>
+              }
+            />
             <Route path="blog" element={<BlogPage />} />
             <Route
               path="blog/new"

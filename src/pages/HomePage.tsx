@@ -1,9 +1,11 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { AddCatalogCard } from '@/components/AddCatalogCard'
+import { LockedCatalog } from '@/components/BrowseGate'
 import { JobCard } from '@/components/JobCard'
 import { Pagination } from '@/components/Pagination'
 import { SelectMenu } from '@/components/SelectMenu'
-import { useIsRecruiter } from '@/context/AuthContext'
+import { useCanBrowseFullCatalog, useIsRecruiter } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { Job, JobFilters } from '@/types'
 
@@ -16,6 +18,7 @@ const SORT_OPTIONS = [
 
 export function HomePage() {
   const isRecruiter = useIsRecruiter()
+  const canBrowseFull = useCanBrowseFullCatalog()
   const [jobs, setJobs] = useState<Job[]>([])
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
@@ -34,6 +37,12 @@ export function HomePage() {
 
   useEffect(() => {
     if (isRecruiter) return
+    const page = filters.page || 1
+    if (!canBrowseFull && page > 1) {
+      setFilters((prev) => ({ ...prev, page: 1 }))
+      return
+    }
+
     let cancelled = false
     setLoading(true)
     setError(null)
@@ -58,9 +67,13 @@ export function HomePage() {
     return () => {
       cancelled = true
     }
-  }, [filters, isRecruiter])
+  }, [filters, isRecruiter, canBrowseFull])
 
   function goToPage(page: number) {
+    if (page > 1 && !canBrowseFull) {
+      listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
     setFilters((prev) => ({ ...prev, page }))
     listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -229,24 +242,33 @@ export function HomePage() {
             ))}
           </div>
         ) : jobs.length === 0 && !error ? (
-          <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-            <h2 className="text-base font-semibold text-ink">No jobs found</h2>
-            <p className="mt-2 text-sm text-ink-muted">Try different keywords or clear filters.</p>
-          </div>
+          <ul className="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+            <li className="min-w-0">
+              <AddCatalogCard kind="job" />
+            </li>
+          </ul>
         ) : (
           <>
-            <ul className="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
-              {jobs.map((job) => (
-                <li key={job.id} className="min-w-0">
-                  <JobCard
-                    job={job}
-                    onChange={(next) =>
-                      setJobs((prev) => prev.map((j) => (j.id === next.id ? next : j)))
-                    }
-                  />
+            <LockedCatalog
+              locked={!canBrowseFull && jobs.length > 2}
+              resourceLabel="job openings"
+            >
+              <ul className="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+                <li className="relative z-30 min-w-0">
+                  <AddCatalogCard kind="job" />
                 </li>
-              ))}
-            </ul>
+                {jobs.map((job) => (
+                  <li key={job.id} className="min-w-0">
+                    <JobCard
+                      job={job}
+                      onChange={(next) =>
+                        setJobs((prev) => prev.map((j) => (j.id === next.id ? next : j)))
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            </LockedCatalog>
 
             <Pagination
               page={filters.page || 1}
