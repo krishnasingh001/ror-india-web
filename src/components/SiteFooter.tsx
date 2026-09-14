@@ -119,7 +119,7 @@ export function SiteFooter() {
                 <TwitterIcon />
               </SocialLink>
               <SocialLink
-                href="https://www.linkedin.com/company/rorindia"
+                href="https://www.linkedin.com/company/rubyonrails-world"
                 label="ROR World on LinkedIn"
               >
                 <LinkedInIcon />
