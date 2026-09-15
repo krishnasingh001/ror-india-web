@@ -148,7 +148,7 @@ export function PrivacyPolicyPage() {
             ]}
           />
           <P>
-            Contact <Mail to="privacy@rorindia.com" /> or use account settings to exercise these rights.
+            Contact <Mail to="hi@rorworld.com" /> or use account settings to exercise these rights.
           </P>
         </>
       ),
@@ -202,7 +202,7 @@ export function PrivacyPolicyPage() {
           <P>
             <strong>ROR World</strong>
             <br />
-            Email: <Mail to="privacy@rorindia.com" />
+            Email: <Mail to="hi@rorworld.com" />
             <br />
             Website: rorworld.com
           </P>

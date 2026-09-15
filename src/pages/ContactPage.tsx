@@ -42,7 +42,7 @@ export function ContactPage() {
     if (honeypot.trim()) return
     const subjectLabel = SUBJECTS.find((s) => s.value === subject)?.label || subject
     const body = `Name: ${name}\nEmail: ${email}\nSubject: ${subjectLabel}\n\n${message}`
-    window.location.href = `mailto:hello@rorindia.com?subject=${encodeURIComponent(
+    window.location.href = `mailto:hi@rorworld.com?subject=${encodeURIComponent(
       `[ROR World] ${subjectLabel}`,
     )}&body=${encodeURIComponent(body)}`
     setSent(true)
@@ -65,8 +65,8 @@ export function ContactPage() {
           <div className="space-y-5 lg:col-span-2">
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
               <h2 className="text-sm font-bold uppercase tracking-wide text-ink">Email</h2>
-              <a href="mailto:hello@rorindia.com" className="mt-2 block cursor-pointer text-brand hover:text-brand-hover">
-                hello@rorindia.com
+              <a href="mailto:hi@rorworld.com" className="mt-2 block cursor-pointer text-brand hover:text-brand-hover">
+                hi@rorworld.com
               </a>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
@@ -166,7 +166,7 @@ export function ContactPage() {
               </button>
               {sent && (
                 <p className="mt-3 text-sm text-emerald-700" role="status">
-                  If your email app didn’t open, write us at hello@rorindia.com.
+                  If your email app didn’t open, write us at hi@rorworld.com.
                 </p>
               )}
             </form>

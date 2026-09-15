@@ -5,6 +5,7 @@ import { ProtectedRoute, RecruiterRoute, CandidateRoute } from '@/components/Pro
 import { RequireBrowseAccess } from '@/components/BrowseGate'
 import { AboutPage } from '@/pages/AboutPage'
 import { AdminRedirect } from '@/pages/AdminRedirect'
+import { AtsResumeCheckerPage } from '@/pages/AtsResumeCheckerPage'
 import { BlogEditorPage } from '@/pages/BlogEditorPage'
 import { BlogPage } from '@/pages/BlogPage'
 import { BlogShowPage } from '@/pages/BlogShowPage'
@@ -135,6 +136,8 @@ export default function App() {
               }
             />
             <Route path="blog" element={<BlogPage />} />
+            <Route path="tools/ats-resume-checker" element={<AtsResumeCheckerPage />} />
+            <Route path="ats-resume-checker" element={<Navigate to="/tools/ats-resume-checker" replace />} />
             <Route
               path="blog/new"
               element={

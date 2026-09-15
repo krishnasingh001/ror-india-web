@@ -234,7 +234,7 @@ export function TermsOfServicePage() {
       title: 'Contact',
       body: (
         <P>
-          Questions: <Mail to="legal@rorindia.com" />
+          Questions: <Mail to="hi@rorworld.com" />
         </P>
       ),
     },

@@ -36,7 +36,7 @@ export function CareersPage() {
         }
         description="Join a small team shipping a focused product for Ruby on Rails developers and companies worldwide."
         actions={
-          <a href="mailto:hello@rorindia.com?subject=Careers%20at%20ROR%20World" className="btn-primary cursor-pointer">
+          <a href="mailto:hi@rorworld.com?subject=Careers%20at%20ROR%20World" className="btn-primary cursor-pointer">
             Send your resume
           </a>
         }
@@ -70,7 +70,7 @@ export function CareersPage() {
                   </p>
                 </div>
                 <a
-                  href={`mailto:hello@rorindia.com?subject=${encodeURIComponent(`Application: ${role.title}`)}`}
+                  href={`mailto:hi@rorworld.com?subject=${encodeURIComponent(`Application: ${role.title}`)}`}
                   className="btn-primary !py-2 cursor-pointer"
                 >
                   Apply

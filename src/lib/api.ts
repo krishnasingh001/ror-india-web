@@ -1,4 +1,5 @@
 import type {
+  AtsCheckReport,
   BlogComment,
   BlogPost,
   BlogPostInput,
@@ -609,5 +610,18 @@ export const api = {
       meta?: { filename: string; content_type: string; characters: number }
       errors?: Record<string, string[]>
     }>('/profile/parse_resume', { method: 'POST', body: form })
+  },
+
+  checkResume: (file: File, targetRole?: string) => {
+    const form = new FormData()
+    form.append('resume', file)
+    if (targetRole?.trim()) form.append('target_role', targetRole.trim())
+    return request<{
+      success: boolean
+      message: string
+      data: AtsCheckReport
+      meta?: { filename: string; content_type: string; characters: number; bytes: number }
+      errors?: Record<string, string[]>
+    }>('/resume_checks', { method: 'POST', body: form })
   },
 }

@@ -396,6 +396,33 @@ export type DeveloperProfile = {
   open_to_recruiters: boolean
 }
 
+export type AtsCheckItem = {
+  id: string
+  label: string
+  status: 'pass' | 'fail' | 'warn'
+  detail: string
+  impact: number
+}
+
+export type AtsCheckCategory = {
+  id: string
+  label: string
+  score: number
+  points_to_gain: number
+  checks: AtsCheckItem[]
+}
+
+export type AtsCheckReport = {
+  overall_score: number
+  summary: string
+  passed_count: number
+  failed_count: number
+  total_checks: number
+  filename?: string | null
+  target_role?: string | null
+  categories: AtsCheckCategory[]
+}
+
 export type DashboardData = {
   role: string
   user: User

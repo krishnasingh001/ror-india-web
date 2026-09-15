@@ -134,8 +134,8 @@ export function CookiePolicyPage() {
       body: (
         <P>
           Questions:{' '}
-          <a href="mailto:privacy@rorindia.com" className="font-semibold text-brand hover:text-brand-hover">
-            privacy@rorindia.com
+          <a href="mailto:hi@rorworld.com" className="font-semibold text-brand hover:text-brand-hover">
+            hi@rorworld.com
           </a>
         </P>
       ),

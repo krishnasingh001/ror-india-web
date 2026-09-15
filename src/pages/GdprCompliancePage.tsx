@@ -99,7 +99,7 @@ export function GdprCompliancePage() {
             ]}
           />
           <P>
-            To exercise these rights, email <Mail to="privacy@rorindia.com" />. We respond within the timeframes required
+            To exercise these rights, email <Mail to="hi@rorworld.com" />. We respond within the timeframes required
             by GDPR.
           </P>
         </>
@@ -161,7 +161,7 @@ export function GdprCompliancePage() {
       title: 'Contact / DPO inquiries',
       body: (
         <P>
-          GDPR requests: <Mail to="privacy@rorindia.com" />
+          GDPR requests: <Mail to="hi@rorworld.com" />
         </P>
       ),
     },

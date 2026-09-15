@@ -57,6 +57,9 @@ export function Layout() {
                 <NavLink to="/companies" className={navClass}>
                   Companies
                 </NavLink>
+                <NavLink to="/tools/ats-resume-checker" className={navClass}>
+                  ATS Checker
+                </NavLink>
                 <NavLink to="/blog" className={navClass}>
                   Blog
                 </NavLink>

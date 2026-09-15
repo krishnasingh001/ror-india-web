@@ -73,6 +73,7 @@ export function SiteFooter() {
     : [
         { label: 'Jobs', to: '/' },
         { label: 'Companies', to: '/companies' },
+        { label: 'ATS Resume Checker', to: '/tools/ats-resume-checker' },
         { label: 'Blog', to: '/blog' },
         ...(user
           ? [
@@ -215,9 +216,22 @@ export function SiteFooter() {
 
       <div className="border-t border-slate-200/80 bg-slate-50/60">
         <div className="container-page flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-slate-600">
-            © {year} ROR World. All rights reserved.
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm text-slate-600">
+              © {year} ROR World. All rights reserved.
+            </p>
+            <p className="text-sm text-slate-600">
+              Built and managed by{' '}
+              <a
+                href="https://www.linkedin.com/in/krishnasinghcs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand hover:text-brand-hover hover:underline"
+              >
+                Krishna Singh
+              </a>
+            </p>
+          </div>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             {stats && (
