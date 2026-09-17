@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
 import { AddCatalogCard } from '@/components/AddCatalogCard'
 import { LockedCatalog } from '@/components/BrowseGate'
 import { JobCard } from '@/components/JobCard'
@@ -19,13 +19,21 @@ const SORT_OPTIONS = [
 export function HomePage() {
   const isRecruiter = useIsRecruiter()
   const canBrowseFull = useCanBrowseFullCatalog()
+  const [searchParams] = useSearchParams()
+  const shareIds = searchParams.get('ids') || undefined
+  const shareRunId = searchParams.get('run_id') || undefined
   const [jobs, setJobs] = useState<Job[]>([])
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   const [perPage, setPerPage] = useState(15)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filters, setFilters] = useState<JobFilters>({ page: 1, sort_by: 'newest' })
+  const [filters, setFilters] = useState<JobFilters>(() => ({
+    page: 1,
+    sort_by: 'newest',
+    ids: shareIds,
+    run_id: shareRunId,
+  }))
   const [keywords, setKeywords] = useState('')
   const [location, setLocation] = useState('')
   const listRef = useRef<HTMLElement>(null)
@@ -34,6 +42,15 @@ export function HomePage() {
   const [subscribeBusy, setSubscribeBusy] = useState(false)
   const [subscribeMsg, setSubscribeMsg] = useState<string | null>(null)
   const [subscribeErr, setSubscribeErr] = useState<string | null>(null)
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      ids: shareIds,
+      run_id: shareRunId,
+      page: 1,
+    }))
+  }, [shareIds, shareRunId])
 
   useEffect(() => {
     if (isRecruiter) return
@@ -109,20 +126,31 @@ export function HomePage() {
     return <Navigate to="/dashboard" replace />
   }
 
+  const shareMode = Boolean(shareIds || shareRunId)
   return (
     <div>
       <section className="hero-surface">
         <div className="container-page flex flex-col items-center px-4 pb-5 pt-6 text-center sm:pb-6 sm:pt-8">
           <span className="inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-[11px] font-semibold text-brand">
-            Ruby on Rails jobs worldwide
+            {shareMode ? 'Shared Rails roles from harvest' : 'Ruby on Rails jobs worldwide'}
           </span>
 
           <h1 className="mt-3 max-w-2xl text-[1.75rem] font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight">
-            Find your next <span className="text-brand">Rails role</span>
+            {shareMode ? (
+              <>
+                Fresh <span className="text-brand">Rails</span> openings
+              </>
+            ) : (
+              <>
+                Find your next <span className="text-brand">Rails role</span>
+              </>
+            )}
           </h1>
 
           <p className="mt-2 max-w-xl text-sm text-ink-muted sm:text-[15px]">
-            Curated Ruby on Rails jobs from companies hiring around the world.
+            {shareMode
+              ? 'Curated Ruby on Rails roles picked for this share — no other-stack noise.'
+              : 'Curated Ruby on Rails jobs from companies hiring around the world.'}
           </p>
 
           <form

@@ -193,6 +193,8 @@ export type JobFilters = {
   work_mode?: string
   sort_by?: string
   page?: number
+  ids?: string
+  run_id?: string | number
 }
 
 export type ApplicationItem = {

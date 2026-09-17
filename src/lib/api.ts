@@ -131,6 +131,8 @@ export const api = {
         work_mode: filters.work_mode,
         sort_by: filters.sort_by,
         page: filters.page,
+        ids: filters.ids,
+        run_id: filters.run_id,
       })}`,
     ),
 
