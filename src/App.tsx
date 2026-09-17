@@ -46,6 +46,7 @@ export default function App() {
           <Route path="admin/*" element={<AdminRedirect />} />
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
+            <Route path="jobs" element={<HomePage />} />
             <Route
               path="jobs/new"
               element={
