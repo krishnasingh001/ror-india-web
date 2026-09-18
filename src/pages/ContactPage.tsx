@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ContentSection, PageHero } from '@/components/marketing/PageChrome'
+import { api } from '@/lib/api'
 
 const SUBJECTS = [
   { value: 'general', label: 'General inquiry' },
@@ -35,17 +36,38 @@ export function ContactPage() {
   const [subject, setSubject] = useState('general')
   const [message, setMessage] = useState('')
   const [honeypot, setHoneypot] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [sent, setSent] = useState(false)
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault()
     if (honeypot.trim()) return
-    const subjectLabel = SUBJECTS.find((s) => s.value === subject)?.label || subject
-    const body = `Name: ${name}\nEmail: ${email}\nSubject: ${subjectLabel}\n\n${message}`
-    window.location.href = `mailto:hi@rorworld.com?subject=${encodeURIComponent(
-      `[ROR World] ${subjectLabel}`,
-    )}&body=${encodeURIComponent(body)}`
-    setSent(true)
+
+    setBusy(true)
+    setError(null)
+    try {
+      const res = await api.submitContact({
+        name,
+        email,
+        subject,
+        message,
+        website: honeypot,
+      })
+      setSent(true)
+      setName('')
+      setEmail('')
+      setSubject('general')
+      setMessage('')
+      if (res.message) {
+        // keep success banner via sent flag
+      }
+    } catch (err: unknown) {
+      const e2 = err as { message?: string }
+      setError(e2.message || 'Could not send your message. Email us at hi@rorworld.com.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -81,14 +103,15 @@ export function ContactPage() {
 
           <div className="lg:col-span-3">
             <form
-              onSubmit={onSubmit}
+              onSubmit={(e) => void onSubmit(e)}
               className="rounded-2xl border border-slate-200 bg-white p-6 shadow-panel sm:p-8"
               noValidate
             >
               <h2 className="text-xl font-bold tracking-tight text-ink">Send a message</h2>
-              <p className="mt-1 text-sm text-ink-muted">We’ll open your email client with the details filled in.</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                We’ll email the team at hi@rorworld.com and confirm back to you.
+              </p>
 
-              {/* Honeypot */}
               <label className="sr-only" htmlFor="website">
                 Website
               </label>
@@ -100,6 +123,17 @@ export function ContactPage() {
                 value={honeypot}
                 onChange={(e) => setHoneypot(e.target.value)}
               />
+
+              {error && (
+                <div className="mt-4 rounded-xl border border-red-200 bg-brand-soft px-3 py-2 text-sm text-brand" role="alert">
+                  {error}
+                </div>
+              )}
+              {sent && !error && (
+                <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800" role="status">
+                  Thanks — your message was sent. We’ll get back to you soon.
+                </div>
+              )}
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div>
@@ -161,14 +195,9 @@ export function ContactPage() {
                 />
               </div>
 
-              <button type="submit" className="btn-primary mt-5 w-full cursor-pointer sm:w-auto">
-                Send message
+              <button type="submit" disabled={busy} className="btn-primary mt-5 w-full cursor-pointer sm:w-auto">
+                {busy ? 'Sending…' : 'Send message'}
               </button>
-              {sent && (
-                <p className="mt-3 text-sm text-emerald-700" role="status">
-                  If your email app didn’t open, write us at hi@rorworld.com.
-                </p>
-              )}
             </form>
           </div>
         </div>

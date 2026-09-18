@@ -517,6 +517,18 @@ export const api = {
       body: JSON.stringify({ subscription: { email } }),
     }),
 
+  submitContact: (payload: {
+    name: string
+    email: string
+    subject: string
+    message: string
+    website?: string
+  }) =>
+    request<{ success: boolean; message: string }>('/contacts', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
   fetchStats: () =>
     request<{
       data: {
