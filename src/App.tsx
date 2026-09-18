@@ -35,6 +35,7 @@ import { SavedJobsPage } from '@/pages/SavedJobsPage'
 import { ShopPage } from '@/pages/ShopPage'
 import { SignInPage } from '@/pages/SignInPage'
 import { SignUpPage } from '@/pages/SignUpPage'
+import { ConfirmEmailPage } from '@/pages/ConfirmEmailPage'
 import { SitemapPage } from '@/pages/SitemapPage'
 import { TermsOfServicePage } from '@/pages/TermsOfServicePage'
 
@@ -166,6 +167,8 @@ export default function App() {
             />
             <Route path="sign-in" element={<SignInPage />} />
             <Route path="sign-up" element={<SignUpPage />} />
+            <Route path="users/confirmation" element={<ConfirmEmailPage />} />
+            <Route path="confirm-email" element={<ConfirmEmailPage />} />
             <Route
               path="dashboard"
               element={

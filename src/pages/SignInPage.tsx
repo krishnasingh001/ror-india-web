@@ -1,16 +1,18 @@
 import { FormEvent, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 
 export function SignInPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [params] = useSearchParams()
   const from = (location.state as { from?: string } | null)?.from || '/dashboard'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const confirmed = params.get('confirmed') === '1'
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -40,6 +42,11 @@ export function SignInPage() {
           <p className="mt-2 text-sm text-ink-muted">Access saved jobs, applications, and your dashboard.</p>
         </div>
         <form onSubmit={onSubmit} className="card-surface space-y-4 p-6 shadow-panel sm:p-8">
+          {confirmed && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800" role="status">
+              Email confirmed. You can sign in now.
+            </div>
+          )}
           {error && <div className="rounded-xl border border-red-200 bg-brand-soft px-3 py-2 text-sm text-brand" role="alert">{error}</div>}
           <div>
             <label htmlFor="email" className="label-field">Email</label>

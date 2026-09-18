@@ -33,14 +33,27 @@ function readCookie(name: string) {
   return match ? decodeURIComponent(match[1]) : null
 }
 
-export async function ensureCsrf() {
-  if (csrfToken) return csrfToken
-  const fromCookie = readCookie('CSRF-TOKEN')
-  if (fromCookie) {
-    csrfToken = fromCookie
-    return csrfToken
+export function clearCsrf() {
+  csrfToken = null
+}
+
+export async function ensureCsrf(force = false) {
+  if (!force && csrfToken) return csrfToken
+
+  // Cross-origin SPAs cannot read the CSRF cookie set by the API host, so always
+  // prefer the JSON token from /auth/csrf. Cookie is only useful on same-origin.
+  if (!force) {
+    const fromCookie = readCookie('CSRF-TOKEN')
+    if (fromCookie) {
+      csrfToken = fromCookie
+      return csrfToken
+    }
   }
-  const res = await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' })
+
+  const res = await fetch(`${API_BASE}/auth/csrf`, {
+    credentials: 'include',
+    cache: 'no-store',
+  })
   const text = await res.text()
   let data: { csrf_token?: string }
   try {
@@ -57,7 +70,7 @@ export async function ensureCsrf() {
   return csrfToken
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function request<T>(path: string, init: RequestInit = {}, retried = false): Promise<T> {
   const method = (init.method || 'GET').toUpperCase()
   const isFormData = typeof FormData !== 'undefined' && init.body instanceof FormData
   const headers: Record<string, string> = {
@@ -69,7 +82,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     if (!isFormData && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json'
     }
-    const token = await ensureCsrf()
+    const token = await ensureCsrf(retried)
     headers['X-CSRF-Token'] = token
   }
 
@@ -95,11 +108,24 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
 
   if (!res.ok) {
-    const err = new Error(
+    const message =
       (typeof data.message === 'string' && data.message) ||
-        (typeof data.error === 'string' && data.error) ||
-        `Request failed (${res.status})`,
-    ) as Error & {
+      (typeof data.error === 'string' && data.error) ||
+      `Request failed (${res.status})`
+
+    // Stale CSRF after session rotation — refresh once and retry mutating calls.
+    if (
+      !retried &&
+      method !== 'GET' &&
+      method !== 'HEAD' &&
+      res.status === 422 &&
+      /csrf|authenticity/i.test(message + JSON.stringify(data))
+    ) {
+      clearCsrf()
+      return request<T>(path, init, true)
+    }
+
+    const err = new Error(message) as Error & {
       status?: number
       payload?: unknown
     }
@@ -326,6 +352,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+
+  confirmEmail: (confirmation_token: string) =>
+    request<{ success: boolean; message: string; redirect_to?: string }>(
+      `/auth/confirm${toQuery({ confirmation_token })}`,
+    ),
 
   logout: () => request<{ success: boolean }>('/auth/logout', { method: 'DELETE' }),
 
