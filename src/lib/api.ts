@@ -358,6 +358,28 @@ export const api = {
       `/auth/confirm${toQuery({ confirmation_token })}`,
     ),
 
+  requestPasswordReset: (email: string) =>
+    request<{ success: boolean; message: string }>('/auth/password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+
+  updatePassword: (payload: {
+    reset_password_token: string
+    password: string
+    password_confirmation: string
+  }) =>
+    request<{ success: boolean; message: string; redirect_to?: string }>('/auth/password', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  unsubscribe: (payload: { token?: string; email?: string }) =>
+    request<{ success: boolean; message: string }>('/subscriptions/unsubscribe', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
   logout: () => request<{ success: boolean }>('/auth/logout', { method: 'DELETE' }),
 
   dashboard: () => request<DashboardData>('/dashboard'),

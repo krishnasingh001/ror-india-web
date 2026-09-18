@@ -36,6 +36,9 @@ import { ShopPage } from '@/pages/ShopPage'
 import { SignInPage } from '@/pages/SignInPage'
 import { SignUpPage } from '@/pages/SignUpPage'
 import { ConfirmEmailPage } from '@/pages/ConfirmEmailPage'
+import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
+import { ResetPasswordPage } from '@/pages/ResetPasswordPage'
+import { UnsubscribePage } from '@/pages/UnsubscribePage'
 import { SitemapPage } from '@/pages/SitemapPage'
 import { TermsOfServicePage } from '@/pages/TermsOfServicePage'
 
@@ -167,8 +170,13 @@ export default function App() {
             />
             <Route path="sign-in" element={<SignInPage />} />
             <Route path="sign-up" element={<SignUpPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
             <Route path="users/confirmation" element={<ConfirmEmailPage />} />
             <Route path="confirm-email" element={<ConfirmEmailPage />} />
+            <Route path="users/password/edit" element={<ResetPasswordPage />} />
+            <Route path="unsubscribe" element={<UnsubscribePage />} />
+            <Route path="unsubscribe/:token" element={<UnsubscribePage />} />
+            <Route path="profile/new" element={<Navigate to="/profile/edit" replace />} />
             <Route
               path="dashboard"
               element={

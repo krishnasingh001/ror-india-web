@@ -13,6 +13,7 @@ export function SignInPage() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const confirmed = params.get('confirmed') === '1'
+  const reset = params.get('reset') === '1'
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -47,13 +48,23 @@ export function SignInPage() {
               Email confirmed. You can sign in now.
             </div>
           )}
+          {reset && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800" role="status">
+              Password updated. Sign in with your new password.
+            </div>
+          )}
           {error && <div className="rounded-xl border border-red-200 bg-brand-soft px-3 py-2 text-sm text-brand" role="alert">{error}</div>}
           <div>
             <label htmlFor="email" className="label-field">Email</label>
             <input id="email" type="email" autoComplete="email" required className="input-field" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div>
-            <label htmlFor="password" className="label-field">Password</label>
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <label htmlFor="password" className="label-field mb-0">Password</label>
+              <Link to="/forgot-password" className="text-xs font-semibold text-brand hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <input id="password" type="password" autoComplete="current-password" required className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <button type="submit" disabled={busy} className="btn-primary w-full">{busy ? 'Signing in…' : 'Sign in'}</button>
