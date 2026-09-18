@@ -358,6 +358,11 @@ export const api = {
       `/auth/confirm${toQuery({ confirmation_token })}`,
     ),
 
+  impersonate: (token: string) =>
+    request<{ success: boolean; message: string; user: User; redirect_to: string }>(
+      `/auth/impersonate${toQuery({ token })}`,
+    ),
+
   requestPasswordReset: (email: string) =>
     request<{ success: boolean; message: string }>('/auth/password', {
       method: 'POST',

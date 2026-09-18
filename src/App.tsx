@@ -39,6 +39,7 @@ import { ConfirmEmailPage } from '@/pages/ConfirmEmailPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage'
 import { UnsubscribePage } from '@/pages/UnsubscribePage'
+import { ImpersonatePage } from '@/pages/ImpersonatePage'
 import { SitemapPage } from '@/pages/SitemapPage'
 import { TermsOfServicePage } from '@/pages/TermsOfServicePage'
 
@@ -48,6 +49,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="admin/*" element={<AdminRedirect />} />
+          <Route path="impersonate/:token" element={<ImpersonatePage />} />
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="jobs" element={<HomePage />} />
