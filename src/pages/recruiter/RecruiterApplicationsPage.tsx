@@ -674,15 +674,19 @@ function ApplicantCard({
           {app.job?.company?.name || 'APP-' + app.id}
         </span>
         <div className="flex shrink-0 items-center gap-1.5">
-          {app.fit_score_status === 'pending' || (app.fit_score == null && app.fit_score_status !== 'failed') ? (
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tabular-nums text-slate-500">
-              Scoring…
-            </span>
-          ) : app.fit_score != null ? (
+          {app.fit_score != null ? (
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums ${fitScoreTone(app.fit_score)}`}>
               {app.fit_score}/100
             </span>
-          ) : null}
+          ) : app.fit_score_status === 'pending' ? (
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tabular-nums text-slate-500">
+              Scoring…
+            </span>
+          ) : (
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tabular-nums text-slate-500">
+              No score
+            </span>
+          )}
           <span
             className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
               STATUS_ACCENT[isStatus(app.status) ? app.status : 'applied'].badge
