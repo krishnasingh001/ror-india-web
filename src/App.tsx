@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
+import { Analytics } from '@/components/Analytics'
 import { Layout } from '@/components/Layout'
 import { ProtectedRoute, RecruiterRoute, CandidateRoute } from '@/components/ProtectedRoute'
 import { RequireBrowseAccess } from '@/components/BrowseGate'
@@ -47,6 +48,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Analytics />
         <Routes>
           <Route path="admin/*" element={<AdminRedirect />} />
           <Route path="impersonate/:token" element={<ImpersonatePage />} />
