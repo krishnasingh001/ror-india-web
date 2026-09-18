@@ -23,25 +23,24 @@ export function initAnalytics() {
 
   initialized = true
   window.dataLayer = window.dataLayer || []
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer.push(args)
+
+  // index.html already defines gtag in production builds; keep a fallback for SPA-only loads.
+  if (typeof window.gtag !== 'function') {
+    window.gtag = function gtag(...args: unknown[]) {
+      window.dataLayer.push(args)
+    }
+    const script = document.createElement('script')
+    script.async = true
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
+    document.head.appendChild(script)
+    window.gtag('js', new Date())
+    window.gtag('config', GA_MEASUREMENT_ID, { send_page_view: false })
   }
-
-  const script = document.createElement('script')
-  script.async = true
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
-  document.head.appendChild(script)
-
-  window.gtag('js', new Date())
-  // SPA route changes send page_view explicitly.
-  window.gtag('config', GA_MEASUREMENT_ID, {
-    send_page_view: false,
-    anonymize_ip: true,
-  })
 }
 
 export function trackPageView(path: string, title?: string) {
-  if (!initialized || !window.gtag || !GA_MEASUREMENT_ID) return
+  initAnalytics()
+  if (!initialized || typeof window.gtag !== 'function' || !GA_MEASUREMENT_ID) return
 
   window.gtag('event', 'page_view', {
     page_path: path,
@@ -51,6 +50,7 @@ export function trackPageView(path: string, title?: string) {
 }
 
 export function trackEvent(eventName: string, params: Record<string, unknown> = {}) {
-  if (!initialized || !window.gtag || !GA_MEASUREMENT_ID) return
+  initAnalytics()
+  if (!initialized || typeof window.gtag !== 'function' || !GA_MEASUREMENT_ID) return
   window.gtag('event', eventName, params)
 }
