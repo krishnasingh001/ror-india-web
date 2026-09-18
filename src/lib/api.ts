@@ -142,15 +142,15 @@ async function request<T>(path: string, init: RequestInit = {}, retried = false)
       `Request failed (${res.status})`
 
     // Stale CSRF after session rotation — refresh once and retry mutating calls.
-    if (
-      !retried &&
-      method !== 'GET' &&
-      method !== 'HEAD' &&
-      res.status === 422 &&
-      /csrf|authenticity/i.test(message + JSON.stringify(data))
-    ) {
-      clearCsrf()
-      return request<T>(path, init, true)
+    // Rails InvalidAuthenticityToken often returns a tiny/opaque 422 body.
+    if (!retried && method !== 'GET' && method !== 'HEAD' && res.status === 422) {
+      const bodyHint = message + JSON.stringify(data)
+      const looksCsrf =
+        /csrf|authenticity/i.test(bodyHint) || Object.keys(data).length === 0
+      if (looksCsrf) {
+        clearCsrf()
+        return request<T>(path, init, true)
+      }
     }
 
     // Expired / invalid bearer — drop it so UI can re-auth cleanly.
