@@ -4,10 +4,11 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
-import { api, ensureCsrf } from '@/lib/api'
+import { api, clearAuthToken, clearCsrf, ensureCsrf, setAuthToken } from '@/lib/api'
 import type { User } from '@/types'
 
 type AuthContextValue = {
@@ -24,6 +25,7 @@ type AuthContextValue = {
   }) => Promise<{ message: string; requires_confirmation: boolean }>
   logout: () => Promise<void>
   setUser: (user: User | null) => void
+  applySession: (user: User, authToken?: string | null) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -31,16 +33,22 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const refreshGeneration = useRef(0)
 
   const refresh = useCallback(async () => {
+    const generation = ++refreshGeneration.current
     try {
       await ensureCsrf()
       const res = await api.me()
+      if (generation !== refreshGeneration.current) return
       setUser(res.user)
     } catch {
+      if (generation !== refreshGeneration.current) return
       setUser(null)
     } finally {
-      setLoading(false)
+      if (generation === refreshGeneration.current) {
+        setLoading(false)
+      }
     }
   }, [])
 
@@ -48,11 +56,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void refresh()
   }, [refresh])
 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await api.login(email, password)
-    setUser(res.user)
-    return { redirect_to: res.redirect_to }
+  const applySession = useCallback(async (nextUser: User, authToken?: string | null) => {
+    // Invalidate any in-flight /auth/me from the initial page load so it cannot
+    // overwrite a successful login/impersonate with user: null.
+    refreshGeneration.current += 1
+    if (authToken) setAuthToken(authToken)
+    clearCsrf()
+    await ensureCsrf(true)
+    setUser(nextUser)
+    setLoading(false)
   }, [])
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const res = await api.login(email, password)
+      await applySession(res.user, res.auth_token)
+      return { redirect_to: res.redirect_to }
+    },
+    [applySession],
+  )
 
   const register = useCallback(
     async (payload: {
@@ -72,13 +94,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const logout = useCallback(async () => {
-    await api.logout()
-    setUser(null)
+    refreshGeneration.current += 1
+    try {
+      await api.logout()
+    } finally {
+      clearAuthToken()
+      clearCsrf()
+      setUser(null)
+      setLoading(false)
+    }
   }, [])
 
   const value = useMemo(
-    () => ({ user, loading, refresh, login, register, logout, setUser }),
-    [user, loading, refresh, login, register, logout],
+    () => ({ user, loading, refresh, login, register, logout, setUser, applySession }),
+    [user, loading, refresh, login, register, logout, applySession],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

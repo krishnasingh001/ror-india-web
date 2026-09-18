@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 export function ImpersonatePage() {
   const { token = '' } = useParams()
   const navigate = useNavigate()
-  const { setUser } = useAuth()
+  const { applySession } = useAuth()
   const [message, setMessage] = useState('Signing you in…')
   const [error, setError] = useState<string | null>(null)
 
@@ -24,7 +24,25 @@ export function ImpersonatePage() {
         await ensureCsrf(true)
         const res = await api.impersonate(token)
         if (cancelled) return
-        setUser(res.user)
+
+        if (!res.user) {
+          setError('Impersonation succeeded but no user was returned.')
+          return
+        }
+
+        await applySession(res.user, res.auth_token)
+        if (cancelled) return
+
+        // Confirm the session works for subsequent API calls (profile, dashboard, …).
+        const me = await api.me()
+        if (cancelled) return
+        if (!me.user) {
+          setError(
+            'Signed in on the server, but this browser blocked the session. Try a normal window (not Incognito), or allow cookies for rorindia.com.',
+          )
+          return
+        }
+
         setMessage(res.message || 'Signed in. Redirecting…')
         navigate(res.redirect_to || '/dashboard', { replace: true })
       } catch (err: unknown) {
@@ -38,7 +56,7 @@ export function ImpersonatePage() {
     return () => {
       cancelled = true
     }
-  }, [token, navigate, setUser])
+  }, [token, navigate, applySession])
 
   return (
     <div className="container-page flex justify-center py-12 sm:py-16">

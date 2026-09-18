@@ -26,7 +26,30 @@ import type {
 const API_BASE =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || '/api/v1'
 
+const AUTH_TOKEN_KEY = 'ror_spa_auth_token'
+
 let csrfToken: string | null = null
+
+export function getAuthToken(): string | null {
+  try {
+    return sessionStorage.getItem(AUTH_TOKEN_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function setAuthToken(token: string | null) {
+  try {
+    if (token) sessionStorage.setItem(AUTH_TOKEN_KEY, token)
+    else sessionStorage.removeItem(AUTH_TOKEN_KEY)
+  } catch {
+    // ignore quota / private mode write failures
+  }
+}
+
+export function clearAuthToken() {
+  setAuthToken(null)
+}
 
 function readCookie(name: string) {
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
@@ -78,6 +101,11 @@ async function request<T>(path: string, init: RequestInit = {}, retried = false)
     ...(init.headers as Record<string, string> | undefined),
   }
 
+  const authToken = getAuthToken()
+  if (authToken && !headers.Authorization && !headers.authorization) {
+    headers.Authorization = `Bearer ${authToken}`
+  }
+
   if (method !== 'GET' && method !== 'HEAD') {
     if (!isFormData && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json'
@@ -123,6 +151,11 @@ async function request<T>(path: string, init: RequestInit = {}, retried = false)
     ) {
       clearCsrf()
       return request<T>(path, init, true)
+    }
+
+    // Expired / invalid bearer — drop it so UI can re-auth cleanly.
+    if (res.status === 401 && authToken) {
+      clearAuthToken()
     }
 
     const err = new Error(message) as Error & {
@@ -336,7 +369,13 @@ export const api = {
   me: () => request<{ user: User | null }>('/auth/me'),
 
   login: (email: string, password: string) =>
-    request<{ success: boolean; user: User; redirect_to: string; message: string }>('/auth/login', {
+    request<{
+      success: boolean
+      user: User
+      redirect_to: string
+      message: string
+      auth_token?: string
+    }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
@@ -359,10 +398,13 @@ export const api = {
     ),
 
   impersonate: (token: string) =>
-    request<{ success: boolean; message: string; user: User; redirect_to: string }>(
-      `/auth/impersonate${toQuery({ token })}`,
-    ),
-
+    request<{
+      success: boolean
+      message: string
+      user: User
+      redirect_to: string
+      auth_token?: string
+    }>(`/auth/impersonate${toQuery({ token })}`),
   requestPasswordReset: (email: string) =>
     request<{ success: boolean; message: string }>('/auth/password', {
       method: 'POST',
