@@ -91,6 +91,20 @@ export type RecruiterApplication = {
   applied_ago: string | null
   created_at: string
   comments_count?: number | null
+  fit_score?: number | null
+  resume_quality_score?: number | null
+  fit_score_status?: 'pending' | 'ready' | 'failed' | string | null
+  fit_score_summary?: string | null
+  fit_scored_at?: string | null
+  fit_score_details?: {
+    matched_keywords?: string[]
+    missing_keywords?: string[]
+    keyword_coverage?: number
+    target_role_fit_score?: number
+    ats_summary?: string
+    categories?: Array<{ id?: string; label?: string; score?: number }>
+    error?: string
+  } | null
   candidate: {
     id: number
     name: string | null

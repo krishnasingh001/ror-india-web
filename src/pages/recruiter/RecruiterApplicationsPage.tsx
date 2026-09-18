@@ -79,6 +79,10 @@ const STATUS_ACCENT: Record<
 }
 
 type Columns = Record<RecruiterApplicationStatus, RecruiterApplication[]>
+type StatusCounts = Record<RecruiterApplicationStatus, number>
+type StatusFlags = Record<RecruiterApplicationStatus, boolean>
+
+const BOARD_PAGE_SIZE = 50
 
 function emptyColumns(): Columns {
   return {
@@ -90,12 +94,28 @@ function emptyColumns(): Columns {
   }
 }
 
+function emptyCounts(): StatusCounts {
+  return { applied: 0, reviewing: 0, shortlisted: 0, rejected: 0, hired: 0 }
+}
+
+function emptyFlags(): StatusFlags {
+  return { applied: false, reviewing: false, shortlisted: false, rejected: false, hired: false }
+}
+
 function normalizeColumns(data: Record<string, RecruiterApplication[]> | undefined): Columns {
   const next = emptyColumns()
   STATUSES.forEach((status) => {
     next[status] = Array.isArray(data?.[status]) ? [...data![status]] : []
   })
   return next
+}
+
+function fitScoreTone(score: number | null | undefined) {
+  if (score == null) return 'bg-slate-100 text-slate-500'
+  if (score >= 80) return 'bg-emerald-50 text-emerald-700'
+  if (score >= 60) return 'bg-amber-50 text-amber-800'
+  if (score >= 40) return 'bg-orange-50 text-orange-700'
+  return 'bg-brand-soft text-brand'
 }
 
 function isStatus(value: string): value is RecruiterApplicationStatus {
@@ -118,6 +138,9 @@ export function RecruiterApplicationsPage() {
   const [columns, setColumns] = useState<Columns>(emptyColumns)
   const [jobs, setJobs] = useState<Job[]>([])
   const [total, setTotal] = useState(0)
+  const [totalsByStatus, setTotalsByStatus] = useState<StatusCounts>(emptyCounts)
+  const [hasMore, setHasMore] = useState<StatusFlags>(emptyFlags)
+  const [loadingMore, setLoadingMore] = useState<Partial<Record<RecruiterApplicationStatus, boolean>>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
@@ -137,14 +160,62 @@ export function RecruiterApplicationsPage() {
     try {
       const res = await api.fetchRecruiterApplicationsBoard({
         job_id: filterJobId || undefined,
+        limit: BOARD_PAGE_SIZE,
+        offset: 0,
       })
       setColumns(normalizeColumns(res.data))
       setTotal(res.meta.total_count)
+      const nextTotals = emptyCounts()
+      const nextMore = emptyFlags()
+      STATUSES.forEach((status) => {
+        nextTotals[status] = res.meta.totals_by_status?.[status] ?? res.data[status]?.length ?? 0
+        nextMore[status] = Boolean(res.meta.has_more?.[status])
+      })
+      setTotalsByStatus(nextTotals)
+      setHasMore(nextMore)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not load applications board.')
       setColumns(emptyColumns())
+      setTotalsByStatus(emptyCounts())
+      setHasMore(emptyFlags())
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function loadMore(status: RecruiterApplicationStatus) {
+    setLoadingMore((prev) => ({ ...prev, [status]: true }))
+    setError(null)
+    try {
+      const res = await api.fetchRecruiterApplicationsBoard({
+        job_id: jobId || undefined,
+        status,
+        limit: BOARD_PAGE_SIZE,
+        offset: columns[status].length,
+      })
+      const incoming = Array.isArray(res.data[status]) ? res.data[status] : []
+      setColumns((prev) => {
+        const seen = new Set(prev[status].map((app) => app.id))
+        const merged = [...prev[status]]
+        incoming.forEach((app) => {
+          if (!seen.has(app.id)) merged.push(app)
+        })
+        return { ...prev, [status]: merged }
+      })
+      setHasMore((prev) => ({
+        ...prev,
+        [status]: Boolean(res.meta.has_more?.[status]),
+      }))
+      if (res.meta.totals_by_status?.[status] != null) {
+        setTotalsByStatus((prev) => ({
+          ...prev,
+          [status]: res.meta.totals_by_status![status],
+        }))
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not load more applicants.')
+    } finally {
+      setLoadingMore((prev) => ({ ...prev, [status]: false }))
     }
   }
 
@@ -340,6 +411,9 @@ export function RecruiterApplicationsPage() {
               <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-ink-muted">
                 {total} applicants
               </span>
+              <span className="hidden text-[11px] text-ink-soft sm:inline">
+                Ranked by job-fit · top {BOARD_PAGE_SIZE} per column
+              </span>
             </div>
           </div>
 
@@ -404,6 +478,10 @@ export function RecruiterApplicationsPage() {
                   key={status}
                   status={status}
                   apps={filteredColumns[status]}
+                  totalCount={totalsByStatus[status]}
+                  hasMore={hasMore[status]}
+                  loadingMore={Boolean(loadingMore[status])}
+                  onLoadMore={() => void loadMore(status)}
                   onOpen={(id) => setSelectedAppId(id)}
                 />
               ))}
@@ -454,10 +532,18 @@ export function RecruiterApplicationsPage() {
 function BoardColumn({
   status,
   apps,
+  totalCount,
+  hasMore,
+  loadingMore,
+  onLoadMore,
   onOpen,
 }: {
   status: RecruiterApplicationStatus
   apps: RecruiterApplication[]
+  totalCount: number
+  hasMore: boolean
+  loadingMore: boolean
+  onLoadMore: () => void
   onOpen: (id: number) => void
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status })
@@ -479,6 +565,7 @@ function BoardColumn({
           className={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular-nums ${accent.badge}`}
         >
           {apps.length}
+          {totalCount > apps.length ? `/${totalCount}` : ''}
         </span>
       </header>
 
@@ -492,6 +579,16 @@ function BoardColumn({
               <span className="text-[12px] font-semibold text-ink-muted">No applicants</span>
               <span className="text-[11px] text-ink-soft">Drag a card here</span>
             </div>
+          )}
+          {hasMore && (
+            <button
+              type="button"
+              onClick={onLoadMore}
+              disabled={loadingMore}
+              className="cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px] font-semibold text-ink-muted transition hover:border-slate-300 hover:text-ink disabled:opacity-60"
+            >
+              {loadingMore ? 'Loading…' : `Load more (${totalCount - apps.length} left)`}
+            </button>
           )}
         </div>
       </SortableContext>
@@ -576,13 +673,24 @@ function ApplicantCard({
         <span className="truncate text-[11px] font-medium text-ink-soft">
           {app.job?.company?.name || 'APP-' + app.id}
         </span>
-        <span
-          className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-            STATUS_ACCENT[isStatus(app.status) ? app.status : 'applied'].badge
-          }`}
-        >
-          {app.status_display || app.status}
-        </span>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {app.fit_score_status === 'pending' || (app.fit_score == null && app.fit_score_status !== 'failed') ? (
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tabular-nums text-slate-500">
+              Scoring…
+            </span>
+          ) : app.fit_score != null ? (
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums ${fitScoreTone(app.fit_score)}`}>
+              {app.fit_score}/100
+            </span>
+          ) : null}
+          <span
+            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+              STATUS_ACCENT[isStatus(app.status) ? app.status : 'applied'].badge
+            }`}
+          >
+            {app.status_display || app.status}
+          </span>
+        </div>
       </div>
     </article>
   )
@@ -606,6 +714,7 @@ function ApplicantDetailModal({
   const [draft, setDraft] = useState('')
   const [posting, setPosting] = useState(false)
   const [commentError, setCommentError] = useState<string | null>(null)
+  const [rescoring, setRescoring] = useState(false)
 
   const profile = detail.profile
   const name = detail.candidate?.name || profile?.full_name || 'Candidate'
@@ -613,6 +722,22 @@ function ApplicantDetailModal({
   const avatar = detail.candidate?.avatar || profile?.profile_picture_url
   const initial = companyInitial(name)
   const statusValue = isStatus(detail.status) ? detail.status : 'applied'
+  const fitDetails = detail.fit_score_details
+  const matched = fitDetails?.matched_keywords || []
+  const missing = fitDetails?.missing_keywords || []
+
+  async function rescore() {
+    setRescoring(true)
+    try {
+      const res = await api.rescoreRecruiterApplication(detail.id)
+      setDetail((prev) => ({ ...prev, ...res.data }))
+      onAppUpdated({ ...detail, ...res.data })
+    } catch {
+      // keep current detail
+    } finally {
+      setRescoring(false)
+    }
+  }
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -748,6 +873,69 @@ function ApplicantDetailModal({
           ) : (
             <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
               <div className="space-y-5">
+                <section className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Job-fit score</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        {detail.fit_score != null ? (
+                          <span className={`rounded-full px-3 py-1 text-sm font-bold tabular-nums ${fitScoreTone(detail.fit_score)}`}>
+                            {detail.fit_score}/100
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-500">
+                            {detail.fit_score_status === 'failed' ? 'Score unavailable' : 'Scoring…'}
+                          </span>
+                        )}
+                        {detail.resume_quality_score != null && (
+                          <span className="text-xs text-ink-muted">
+                            Resume quality {detail.resume_quality_score}/100
+                          </span>
+                        )}
+                      </div>
+                      {detail.fit_score_summary && (
+                        <p className="mt-2 text-sm text-slate-700">{detail.fit_score_summary}</p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => void rescore()}
+                      disabled={rescoring}
+                      className="btn-secondary cursor-pointer !py-1.5 !text-xs"
+                    >
+                      {rescoring ? 'Queuing…' : 'Rescore'}
+                    </button>
+                  </div>
+                  {(matched.length > 0 || missing.length > 0) && (
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      {matched.length > 0 && (
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">Matched</p>
+                          <div className="mt-1.5 flex flex-wrap gap-1">
+                            {matched.slice(0, 12).map((keyword) => (
+                              <span key={keyword} className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+                                {keyword}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {missing.length > 0 && (
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Missing from JD</p>
+                          <div className="mt-1.5 flex flex-wrap gap-1">
+                            {missing.slice(0, 12).map((keyword) => (
+                              <span key={keyword} className="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-900">
+                                {keyword}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </section>
+
                 {(profile?.bio || profile?.career_summary) && (
                   <section>
                     <p className="text-xs font-bold uppercase tracking-wide text-slate-500">About</p>

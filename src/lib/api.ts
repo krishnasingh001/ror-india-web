@@ -168,14 +168,40 @@ export const api = {
       })}`,
     ),
 
-  fetchRecruiterApplicationsBoard: (params: { job_id?: number | string } = {}) =>
+  fetchRecruiterApplicationsBoard: (params: {
+    job_id?: number | string
+    status?: string
+    limit?: number
+    offset?: number
+  } = {}) =>
     request<{
       data: Record<string, RecruiterApplication[]>
-      meta: { total_count: number; statuses: string[] }
-    }>(`/recruiter/applications/board${toQuery({ job_id: params.job_id })}`),
+      meta: {
+        total_count: number
+        statuses: string[]
+        totals_by_status?: Record<string, number>
+        has_more?: Record<string, boolean>
+        limit?: number
+        offset?: number
+        status?: string | null
+      }
+    }>(
+      `/recruiter/applications/board${toQuery({
+        job_id: params.job_id,
+        status: params.status,
+        limit: params.limit,
+        offset: params.offset,
+      })}`,
+    ),
 
   fetchRecruiterApplication: (id: number | string) =>
     request<{ data: RecruiterApplication }>(`/recruiter/applications/${id}`),
+
+  rescoreRecruiterApplication: (id: number | string) =>
+    request<{ success: boolean; message: string; data: RecruiterApplication }>(
+      `/recruiter/applications/${id}/rescore`,
+      { method: 'POST' },
+    ),
 
   updateApplicationStatus: (id: number | string, status: string) =>
     request<{ success: boolean; message: string; data: RecruiterApplication }>(
